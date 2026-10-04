@@ -1,0 +1,254 @@
+services:
+
+  # ============================================================
+  # PostgreSQL
+  # ============================================================
+
+  db:
+    image: postgres:16-bookworm
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: helios
+      POSTGRES_USER: helios
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    volumes:
+      - /srv/helios/postgres:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U helios -d helios
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    networks:
+      - helios-internal
+
+
+  # ============================================================
+  # RabbitMQ / Celery
+  # ============================================================
+
+  rabbitmq:
+    image: rabbitmq:4.1-alpine
+    restart: unless-stopped
+
+    environment:
+      RABBITMQ_DEFAULT_USER: helios
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+
+    volumes:
+      - /srv/helios/rabbitmq:/var/lib/rabbitmq
+
+    healthcheck:
+      test:
+        - CMD
+        - rabbitmq-diagnostics
+        - -q
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    networks:
+      - helios-internal
+
+
+  # ============================================================
+  # Migraciones Django
+  # ============================================================
+
+  migrate:
+    image: ghcr.io/stegsindicato/helios-server:main
+    restart: "no"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment: &helios-env
+
+      # --------------------------------------------------------
+      # Django / Helios
+      # --------------------------------------------------------
+
+      DEBUG: "0"
+
+      SECRET_KEY: ${HELIOS_SECRET_KEY}
+      EMAIL_OPTOUT_SECRET: ${HELIOS_EMAIL_OPTOUT_SECRET}
+
+      ALLOWED_HOSTS: ${HELIOS_HOST}
+
+      SSL: "1"
+      HSTS: "0"
+
+      URL_HOST: https://${HELIOS_HOST}
+      SECURE_URL_HOST: https://${HELIOS_HOST}
+
+      SITE_TITLE: ${HELIOS_SITE_TITLE}
+      HELP_EMAIL_ADDRESS: ${HELP_EMAIL}
+
+      MASTER_HELIOS: "0"
+      SHOW_LOGIN_OPTIONS: "1"
+      SHOW_USER_INFO: "1"
+
+
+      # --------------------------------------------------------
+      # Autenticación
+      #
+      # Temporalmente password.
+      # Posteriormente añadiremos OTP @edu.xunta.gal.
+      # --------------------------------------------------------
+
+      AUTH_ENABLED_SYSTEMS: password
+      AUTH_DEFAULT_SYSTEM: password
+
+
+      # --------------------------------------------------------
+      # PostgreSQL
+      # --------------------------------------------------------
+
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: helios
+      PGUSER: helios
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGSSLMODE: disable
+
+
+      # --------------------------------------------------------
+      # Celery / RabbitMQ
+      # --------------------------------------------------------
+
+      CELERY_BROKER_URL: amqp://helios:${RABBITMQ_PASSWORD}@rabbitmq:5672//
+
+
+      # --------------------------------------------------------
+      # SMTP
+      # --------------------------------------------------------
+
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      EMAIL_USE_TLS: "1"
+
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      DEFAULT_FROM_NAME: ${DEFAULT_FROM_NAME}
+
+
+    command:
+      - /bin/sh
+      - -c
+      - |
+        exec .venv/bin/python manage.py migrate --noinput
+
+    networks:
+      - helios-internal
+
+
+  # ============================================================
+  # Helios Web
+  # ============================================================
+
+  web:
+    image: ghcr.io/stegsindicato/helios-server:main
+    restart: unless-stopped
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+      rabbitmq:
+        condition: service_healthy
+
+      migrate:
+        condition: service_completed_successfully
+
+    environment:
+      <<: *helios-env
+
+    command:
+      - /bin/sh
+      - -c
+      - |
+        exec .venv/bin/gunicorn wsgi:application \
+          --bind 0.0.0.0:8000 \
+          --workers 4 \
+          --timeout 120 \
+          --access-logfile - \
+          --error-logfile -
+
+    volumes:
+      - /srv/helios/media:/appmedia
+
+    ports:
+      - "127.0.0.1:8088:8000"
+
+    healthcheck:
+      test:
+        - CMD
+        - .venv/bin/python
+        - -c
+        - "import socket; s=socket.create_connection(('127.0.0.1',8000),5); s.close()"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+    networks:
+      - helios-internal
+
+
+  # ============================================================
+  # Celery Worker
+  # ============================================================
+
+  worker:
+    image: ghcr.io/stegsindicato/helios-server:main
+    restart: unless-stopped
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+      rabbitmq:
+        condition: service_healthy
+
+      migrate:
+        condition: service_completed_successfully
+
+    environment:
+      <<: *helios-env
+
+    command:
+      - /bin/sh
+      - -c
+      - |
+        exec .venv/bin/celery \
+          --app helios \
+          worker \
+          --events \
+          --beat \
+          --concurrency 1
+
+    volumes:
+      - /srv/helios/media:/appmedia
+
+    networks:
+      - helios-internal
+
+
+# ==============================================================
+# Redes
+# ==============================================================
+
+networks:
+
+  helios-internal:
+    driver: bridge
