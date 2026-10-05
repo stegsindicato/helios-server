@@ -1,13 +1,17 @@
 {% extends "helios/templates/cryptobase.html" %}
+{% load i18n %}
 
 {% block content %}
+{% blocktrans asvar confirm_private_key_saved %}Have you made sure to copy the private key to a safe place?
+
+Once you click OK, Helios will not be able to recover the secret key without your help!{% endblocktrans %}
 <script language="javascript">
 
 var SECRET_KEY;
 
 function before_create() {
 {% if election_type == "one" %}
-    return confirm('Have you made sure to copy the private key to a safe place?\n\nOnce you click OK, Helios will not be able to recover the secret key without your help!');
+    return confirm("{{ confirm_private_key_saved|escapejs }}");
 {% else %}
     return true;
 {% endif %}

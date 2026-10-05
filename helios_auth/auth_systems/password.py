@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import re_path
+from django.utils.translation import gettext
 
 from helios_auth import url_names
 from helios_auth.utils import format_recipient
@@ -96,21 +97,21 @@ def password_forgotten_view(request):
     try:
       user = User.get_by_type_and_id('password', username)
     except User.DoesNotExist:
-      return render_template(request, 'password/forgot', {'return_url': request.GET.get('return_url', ''), 'error': 'no such username'})
+      return render_template(request, 'password/forgot', {'return_url': request.GET.get('return_url', ''), 'error': gettext('no such username')})
     
-    body = """
-
-This is a password reminder:
-
-Your username: %s
-Your password: %s
-
---
-%s
-""" % (user.user_id, user.info['password'], settings.SITE_TITLE)
+    body = gettext(
+        "This is a password reminder:\n\n"
+        "Your username: %(username)s\n"
+        "Your password: %(password)s\n\n"
+        "--\n%(site_title)s"
+    ) % {
+        "username": user.user_id,
+        "password": user.info['password'],
+        "site_title": settings.SITE_TITLE,
+    }
 
     # FIXME: make this a task
-    send_mail('password reminder', body, settings.SERVER_EMAIL, [format_recipient(user.info['name'], user.info['email'])], fail_silently=False)
+    send_mail(gettext('password reminder'), body, settings.SERVER_EMAIL, [format_recipient(user.info['name'], user.info['email'])], fail_silently=False)
     
     return HttpResponseRedirect(return_url)
   

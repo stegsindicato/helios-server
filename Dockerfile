@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     libpq-dev \
     ca-certificates \
+    gettext \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir uv
@@ -20,6 +21,8 @@ WORKDIR /app
 COPY . /app
 
 RUN uv sync --frozen --no-dev
+
+RUN .venv/bin/python manage.py compilemessages
 
 ENV PATH="/app/.venv/bin:$PATH"
 

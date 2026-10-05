@@ -1,9 +1,15 @@
 {% extends "helios/templates/cryptobase.html" %}
+{% load i18n %}
 
 {% block title %}Questions for {{election.name}}{% endblock %}
 {% block content %}
   <h3 class="title">{{election.name}} &mdash; Questions <span style="font-size:0.7em;">[<a href="{% url "election@view" election.uuid %}">back to election</a>]</span></h3>
 
+  {% trans "The questions could not be saved. Please check that the URLs you entered are either http:// or https://" as questions_save_error %}
+  {% trans "Please enter at least one answer option." as at_least_one_answer %}
+  {% trans "+ Add link" as add_link_label %}
+  {% trans "- Hide link" as hide_link_label %}
+  {% blocktrans asvar answer_gap_message %}Please fill in all answer fields up to answer #{last}. You cannot skip answer #{skipped}.{% endblocktrans %}
   <script language="javascript">
 {% if election.questions %}
   QUESTIONS = JSON.parse("{{questions_json|escapejs}}");
@@ -64,7 +70,7 @@
   function save_questions(callback) {
       $.post('./save_questions', {'questions_json' : $.toJSON(QUESTIONS), 'csrf_token': CSRF_TOKEN}, function(result) {
           if (result == "FAILURE") {
-            alert("The questions could not be saved. Please check that the URLs you entered are either http:// or https://");
+            alert("{{ questions_save_error|escapejs }}");
           } else {
             callback();
           }
@@ -100,7 +106,9 @@
       // Check for gaps in answers (empty answers before the last valid one)
       for (var k = 0; k <= last_valid_index; k++) {
           if (all_answers[k] === '') {
-              alert('Please fill in all answer fields up to answer #' + (last_valid_index + 1) + '. You cannot skip answer #' + (k + 1) + '.');
+              var gap_message = "{{ answer_gap_message|escapejs }}";
+              gap_message = gap_message.replace('{last}', last_valid_index + 1).replace('{skipped}', k + 1);
+              alert(gap_message);
               return null;
           }
       }
@@ -112,7 +120,7 @@
       }
       
       if (new_q.answers.length == 0) {
-        alert('Please enter at least one answer option.');
+        alert("{{ at_least_one_answer|escapejs }}");
         return null;
       }
       
@@ -187,10 +195,10 @@
     var wrapper = $('#url_wrapper_' + num);
     if (wrapper.is(':visible')) {
       wrapper.hide();
-      $(element).find('span').text('+ Add link');
+      $(element).find('span').text("{{ add_link_label|escapejs }}");
     } else {
       wrapper.show();
-      $(element).find('span').text('- Hide link');
+      $(element).find('span').text("{{ hide_link_label|escapejs }}");
     }
   }
 

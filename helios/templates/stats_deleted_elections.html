@@ -1,4 +1,5 @@
 {% extends TEMPLATE_BASE %}
+{% load i18n %}
 {% load timezone_tags %}
 {% block title %}Deleted Elections{% endblock %}
 
@@ -31,7 +32,8 @@ Elections {{elections_page.start_index}} - {{elections_page.end_index}} (of {{to
 <b>{{election.name}}</b> by <a href="mailto:{{election.admin.info.email}}">{{election.admin.pretty_name}}</a><br />
 Deleted at: {{election.deleted_at|utc_time}}<br />
 {{election.num_voters}} voters / {{election.num_cast_votes}} cast votes<br />
-<form method="post" action="{% url "stats@undelete-election" election.uuid %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to restore this election? It will become visible to its administrators again.');">
+{% trans "Are you sure you want to restore this election? It will become visible to its administrators again." as confirm_restore_election %}
+<form method="post" action="{% url "stats@undelete-election" election.uuid %}" style="display:inline;" onsubmit="return confirm('{{ confirm_restore_election|escapejs }}');">
 <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
 <button type="submit" class="small button">undelete</button>
 </form>

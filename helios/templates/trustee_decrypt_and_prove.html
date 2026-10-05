@@ -1,6 +1,8 @@
 {% extends "helios/templates/cryptobase.html" %}
+{% load i18n %}
 
 {% block content %}
+{% trans "verification failed, you probably used the wrong key." as verification_failed_message %}
 <script language="javascript">
 
 $(document).ready(function() {
@@ -104,7 +106,7 @@ function submit_result() {
         if (result != "FAILURE") {
           $('#done_div').show();
         } else {
-          alert('verification failed, you probably used the wrong key.');
+          alert("{{ verification_failed_message|escapejs }}");
           reset();
         }
       },

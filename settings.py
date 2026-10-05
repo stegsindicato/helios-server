@@ -69,7 +69,12 @@ USE_TZ = False
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = get_from_env('LANGUAGE_CODE', 'gl')
+
+LANGUAGES = [
+    ('gl', 'Galego'),
+    ('en', 'English'),
+]
 
 SITE_ID = 1
 
@@ -179,6 +184,10 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'urls'
 
 ROOT_PATH = os.path.dirname(__file__)
+
+LOCALE_PATHS = [
+    os.path.join(ROOT_PATH, 'locale'),
+]
 
 TEMPLATES = [
     {

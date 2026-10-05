@@ -1,4 +1,5 @@
 {% extends TEMPLATE_BASE %}
+{% load i18n %}
 
 {% block title %}Compute Encryted Tally for {{election.name}}{% endblock %}
 
@@ -27,7 +28,8 @@
     Once you do this, voters will no longer be able to cast a ballot.
 </p>
 
-<form method="post" action="" onsubmit="alert('ok, tally has begun')" class="pretty">
+{% trans "OK, tally has begun." as tally_begun_message %}
+<form method="post" action="" onsubmit="alert('{{ tally_begun_message|escapejs }}')" class="pretty">
 <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
 
 <input class="button" type="submit" value="compute encrypted tally!" />

@@ -1,22 +1,22 @@
-Dear {{voter.name}},
+{% load i18n %}{% blocktrans with voter_name=voter.name %}Dear {{ voter_name }},{% endblocktrans %}
 
 {{custom_message|safe}}
 
 ========
-How to Vote
+{% trans "How to Vote" %}
 
-Election URL:  {{election_vote_url}}
+{% trans "Election URL:" %}  {{election_vote_url}}
 {% if voter.voter_type == "password" %}
-Your voter ID: {{voter.voter_login_id}}
-Your password: {{voter.voter_password}}
+{% blocktrans with voter_id=voter.voter_login_id %}Your voter ID: {{ voter_id }}{% endblocktrans %}
+{% blocktrans with voter_password=voter.voter_password %}Your password: {{ voter_password }}{% endblocktrans %}
 {% else %}
-Log in with your {{voter.voter_type}} account.
+{% blocktrans with voter_type=voter.voter_type %}Log in with your {{ voter_type }} account.{% endblocktrans %}
 {% endif %}
 
 --
 Helios
 
 {% if unsubscribe_url %}
-To stop receiving all emails from Helios, click here:
+{% trans "To stop receiving all emails from Helios, click here:" %}
 {{ unsubscribe_url }}
 {% endif %}
