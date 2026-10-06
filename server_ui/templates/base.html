@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/static/foundation-tweaks.css">
   <link rel="stylesheet" href="/static/main.css">
   <link rel="stylesheet" href="/static/helios/timezone-display.css">
+  <link rel="stylesheet" href="/static/custom.css">
 
 {% if settings.DEBUG %}  
   <script src="/static/foundation/js/vendor/custom.modernizr.js"></script>
@@ -52,7 +53,11 @@
     <ul class="title-area">
       <!-- Title Area -->
       <li class="name">
-        <h1><a href="/"><img src="/static/tinylogo.png"></a></h1>
+        <h1 class="site-logo">
+          <a href="/">
+            <img src="{{ settings.TOP_LOGO_URL }}" alt="{{ settings.SITE_TITLE }}">
+          </a>
+        </h1>
       </li>
       <li class="toggle-topbar menu-icon"><a href="#" onclick="$('nav').toggleClass('expanded'); return false;"><span>{% trans "Menu" %}</span></a>
       </li>
@@ -101,11 +106,11 @@
   </div>
 
   <div class="footer" id="footer">
-<!--    <span style="float:right;">
+    <span style="float:right;">
       {% if settings.FOOTER_LOGO_URL %}
       <img src="{{settings.FOOTER_LOGO_URL}}" />
       {% endif %}
-    </span>-->
+    </span>
     {% if user %}
     {% blocktrans with user_html=user.display_html_small|safe trimmed %}
     logged in as <b>{{ user_html }}</b>&nbsp;&nbsp;

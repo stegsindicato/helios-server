@@ -1,0 +1,7 @@
+/* Personalización propia de Helios */
+
+.top-bar .site-logo img {
+    max-height: 32px;
+    width: auto;
+    vertical-align: middle;
+}
