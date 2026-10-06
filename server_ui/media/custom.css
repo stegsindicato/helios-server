@@ -1,7 +1,198 @@
-/* Personalización propia de Helios */
+/* =========================================================
+   AAEP / Helios
+   Personalización visual ligera
+   ========================================================= */
+
+:root {
+    --aaep-bg: #f7f6f2;
+    --aaep-surface: #ffffff;
+    --aaep-text: #222222;
+    --aaep-muted: #666666;
+    --aaep-border: #dedbd3;
+    --aaep-accent: #b35335;
+    --aaep-accent-hover: #93442c;
+}
+
+
+/* ---------------------------------------------------------
+   Base
+   --------------------------------------------------------- */
+
+body {
+    background: var(--aaep-bg);
+    color: var(--aaep-text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#contentbody {
+    max-width: 1100px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+
+/* ---------------------------------------------------------
+   Barra superior
+   --------------------------------------------------------- */
+
+.top-bar {
+    background: var(--aaep-surface);
+    border-bottom: 1px solid var(--aaep-border);
+    min-height: 70px;
+    box-shadow: none;
+}
+
+.top-bar .title-area,
+.top-bar-section ul,
+.top-bar-section li:not(.has-form),
+.top-bar-section li:not(.has-form) a:not(.button) {
+    background: transparent;
+}
+
+.top-bar .site-logo {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.top-bar .site-logo a {
+    display: flex;
+    align-items: center;
+    height: 70px;
+}
 
 .top-bar .site-logo img {
-    max-height: 32px;
+    max-height: 48px;
     width: auto;
-    vertical-align: middle;
+}
+
+
+/* Nombre del sitio */
+
+.top-bar-section > ul > li > a {
+    color: var(--aaep-text);
+    font-weight: 600;
+}
+
+.top-bar-section li:not(.has-form) a:not(.button) {
+    color: var(--aaep-text);
+    line-height: 70px;
+}
+
+.top-bar-section li:not(.has-form) a:not(.button):hover {
+    background: transparent;
+    color: var(--aaep-accent);
+}
+
+
+/* Separadores de Foundation */
+
+.top-bar-section .divider {
+    border-color: transparent;
+}
+
+
+/* ---------------------------------------------------------
+   Títulos
+   --------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--aaep-text);
+    font-weight: 700;
+}
+
+h1,
+h2 {
+    letter-spacing: -0.02em;
+}
+
+
+/* ---------------------------------------------------------
+   Enlaces
+   --------------------------------------------------------- */
+
+a {
+    color: var(--aaep-accent);
+}
+
+a:hover,
+a:focus {
+    color: var(--aaep-accent-hover);
+}
+
+
+/* ---------------------------------------------------------
+   Botones
+   --------------------------------------------------------- */
+
+button,
+.button,
+input[type="submit"] {
+    background: var(--aaep-accent);
+    border: none;
+    border-radius: 3px;
+    color: #fff;
+    font-weight: 600;
+}
+
+button:hover,
+button:focus,
+.button:hover,
+.button:focus,
+input[type="submit"]:hover,
+input[type="submit"]:focus {
+    background: var(--aaep-accent-hover);
+}
+
+
+/* ---------------------------------------------------------
+   Formularios
+   --------------------------------------------------------- */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    border: 1px solid var(--aaep-border);
+    border-radius: 2px;
+    background: var(--aaep-surface);
+    box-shadow: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--aaep-accent);
+    box-shadow: none;
+}
+
+
+/* ---------------------------------------------------------
+   Contenedores
+   --------------------------------------------------------- */
+
+.panel,
+fieldset {
+    background: var(--aaep-surface);
+    border: 1px solid var(--aaep-border);
+}
+
+
+/* ---------------------------------------------------------
+   Pie
+   --------------------------------------------------------- */
+
+.footer {
+    border-top: 1px solid var(--aaep-border);
+    background: transparent;
+    color: var(--aaep-muted);
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
 }
