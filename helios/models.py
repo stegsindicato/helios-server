@@ -14,6 +14,7 @@ import uuid
 import bleach
 from django.conf import settings
 from django.db import models, transaction
+from django.utils.translation import gettext, gettext_lazy, ngettext
 from validate_email import validate_email
 
 from helios import datatypes
@@ -58,8 +59,8 @@ class Election(HeliosModel):
   name = models.CharField(max_length=250)
 
   ELECTION_TYPES = (
-    ('election', 'Election'),
-    ('referendum', 'Referendum')
+    ('election', gettext_lazy('Election')),
+    ('referendum', gettext_lazy('Referendum')),
     )
 
   election_type = models.CharField(max_length=250, null=False, default='election', choices = ELECTION_TYPES)
@@ -369,7 +370,7 @@ class Election(HeliosModel):
   @property
   def pretty_eligibility(self):
     if not self.eligibility:
-      return "Anyone can vote."
+      return gettext("Anyone can vote.")
     else:
       return_val = "<ul>"
 
@@ -420,27 +421,27 @@ class Election(HeliosModel):
     if self.questions is None or len(self.questions) == 0:
       issues.append(
         {'type': 'questions',
-         'action': "add questions to the ballot"}
+         'action': gettext("add questions to the ballot")}
         )
 
     trustees = Trustee.get_by_election(self)
     if len(trustees) == 0:
       issues.append({
           'type': 'trustees',
-          'action': "add at least one trustee"
+          'action': gettext("add at least one trustee")
           })
 
     for t in trustees:
       if t.public_key is None:
         issues.append({
             'type': 'trustee keypairs',
-            'action': 'have trustee %s generate a keypair' % t.name
+            'action': gettext('have trustee %(trustee_name)s generate a keypair') % {'trustee_name': t.name}
             })
 
     if self.voter_set.count() == 0 and not self.openreg:
       issues.append({
           "type" : "voters",
-          "action" : 'enter your voter list (or open registration to the public)'
+          "action" : gettext('enter your voter list (or open registration to the public)')
           })
 
     return issues
@@ -458,7 +459,11 @@ class Election(HeliosModel):
       cutoff_date = datetime.datetime.utcnow() - datetime.timedelta(weeks=settings.HELIOS_VOTER_EMAIL_CUTOFF_WEEKS)
       if self.tallying_finished_at < cutoff_date:
         weeks = settings.HELIOS_VOTER_EMAIL_CUTOFF_WEEKS
-        return (False, f"Election was tallied more than {weeks} week{'s' if weeks != 1 else ''} ago")
+        return (False, ngettext(
+            'Election was tallied more than %(weeks)s week ago',
+            'Election was tallied more than %(weeks)s weeks ago',
+            weeks,
+        ) % {'weeks': weeks})
 
     # Add more reasons here in the future
 
@@ -473,10 +478,10 @@ class Election(HeliosModel):
     as changing voters after vote counting would compromise election integrity.
     """
     if self.encrypted_tally:
-      return (False, "Election has been tallied")
+      return (False, gettext("Election has been tallied"))
 
     if self.tallying_started_at:
-      return (False, "Tallying has started")
+      return (False, gettext("Tallying has started"))
 
     return (True, None)
 
@@ -776,11 +781,11 @@ class ElectionLog(models.Model):
   a log of events for an election
   """
 
-  FROZEN = "frozen"
-  VOTER_FILE_ADDED = "voter file added"
-  DECRYPTIONS_COMBINED = "decryptions combined"
-  DELETED = "deleted"
-  UNDELETED = "undeleted"
+  FROZEN = gettext_lazy("frozen")
+  VOTER_FILE_ADDED = gettext_lazy("voter file added")
+  DECRYPTIONS_COMBINED = gettext_lazy("decryptions combined")
+  DELETED = gettext_lazy("deleted")
+  UNDELETED = gettext_lazy("undeleted")
 
   election = models.ForeignKey(Election, on_delete=models.CASCADE)
   log = models.CharField(max_length=500)
@@ -974,7 +979,7 @@ class Voter(HeliosModel):
     # Check if user email is opted out
     user_email = user.user_id if user else None
     if user_email and EmailOptOut.is_opted_out(user_email):
-        raise ValueError(f"Cannot register user {user_email} - email has opted out of Helios emails")
+        raise ValueError(gettext("Cannot register user %(email)s — this email address has opted out of Helios emails.") % {"email": user_email})
 
     voter_uuid = str(uuid.uuid4())
     voter = Voter(uuid= voter_uuid, user = user, election = election)
@@ -1319,7 +1324,7 @@ class Trustee(HeliosModel):
     # not saved yet?
     if not self.secret:
       self.secret = utils.random_string(12)
-      self.election.append_log("Trustee %s added" % self.name)
+      self.election.append_log(gettext("Trustee %(trustee_name)s added") % {"trustee_name": self.name})
 
     super(Trustee, self).save(*args, **kwargs)
 

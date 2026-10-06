@@ -1,0 +1,476 @@
+# Galician translations for Helios.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the Helios project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Helios Voting\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-05 21:47+0000\n"
+"PO-Revision-Date: 2026-10-05 21:47+0000\n"
+"Last-Translator: \n"
+"Language: gl\n"
+"Language-Team: Galego\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: heliosbooth/js/i18n.js:34
+msgid "Helios Voting Booth"
+msgstr "Cabina de votación de Helios"
+
+#: heliosbooth/js/i18n.js:35
+msgid "Exit"
+msgstr "Saír"
+
+#: heliosbooth/js/i18n.js:36
+msgid "Select"
+msgstr "Seleccionar"
+
+#: heliosbooth/js/i18n.js:37
+msgid "Review"
+msgstr "Revisar"
+
+#: heliosbooth/js/i18n.js:38
+msgid "Submit"
+msgstr "Enviar"
+
+#: heliosbooth/js/i18n.js:39
+msgid "Start"
+msgstr "Comezar"
+
+#: heliosbooth/js/i18n.js:40
+msgid "Proceed"
+msgstr "Continuar"
+
+#: heliosbooth/js/i18n.js:41
+msgid "Previous"
+msgstr "Anterior"
+
+#: heliosbooth/js/i18n.js:42
+msgid "Next"
+msgstr "Seguinte"
+
+#: heliosbooth/js/i18n.js:43
+msgid "more info"
+msgstr "máis información"
+
+#: heliosbooth/js/i18n.js:44
+msgid "change"
+msgstr "Cambiar"
+
+#: heliosbooth/js/i18n.js:45
+msgid "Question"
+msgstr "Pregunta"
+
+#: heliosbooth/js/i18n.js:46
+msgid "No choice selected"
+msgstr "Ningunha opción seleccionada"
+
+#: heliosbooth/js/i18n.js:47
+msgid "Proceed to Login"
+msgstr "Continuar á identificación"
+
+#: heliosbooth/js/i18n.js:48
+msgid "Spoil & Audit"
+msgstr "Anular e auditar"
+
+#: heliosbooth/js/i18n.js:49
+msgid "optional"
+msgstr "opcional"
+
+#: heliosbooth/js/i18n.js:50
+msgid "Back to Voting"
+msgstr "Volver á votación"
+
+#: heliosbooth/js/i18n.js:51
+msgid "Post audited ballot to tracking center"
+msgstr "Publicar a papeleta auditada no centro de seguimento"
+
+#: heliosbooth/js/i18n.js:52
+msgid "Contact election support"
+msgstr "Contactar coa axuda da elección"
+
+#: heliosbooth/js/i18n.js:53
+msgid "Election Fingerprint:"
+msgstr "Pegada dixital da elección:"
+
+#: heliosbooth/js/i18n.js:55
+msgid "If you leave this page with an in-progress ballot, your ballot will be lost."
+msgstr "Se saes desta páxina cunha papeleta en curso, perderase a papeleta."
+
+#: heliosbooth/js/i18n.js:56
+msgid "Are you sure you want to exit the booth and lose all information about your current ballot?"
+msgstr "Tes a certeza de que queres saír da cabina e perder toda a información da papeleta actual?"
+
+#: heliosbooth/js/i18n.js:57
+msgid ""
+"Maximum number of options selected. To change your selection, please deselect a current selection"
+" first."
+msgstr ""
+"Acadaches o número máximo de opcións. Para cambiar a selección, desmarca primeiro unha das "
+"opcións seleccionadas."
+
+#: heliosbooth/js/i18n.js:58
+msgid "Processing..."
+msgstr "Procesando..."
+
+#: heliosbooth/js/i18n.js:59
+msgid "Checking capabilities and loading election booth..."
+msgstr "Comprobando as capacidades e cargando a cabina de votación..."
+
+#: heliosbooth/js/i18n.js:60
+msgid "This may take up to 10 seconds."
+msgstr "Isto pode tardar ata 10 segundos."
+
+#: heliosbooth/js/i18n.js:61
+msgid "There's a problem"
+msgstr "Produciuse un problema"
+
+#: heliosbooth/js/i18n.js:62
+msgid ""
+"It appears that your browser does not have Java enabled. Helios needs Java to perform encryption "
+"within the browser."
+msgstr ""
+"Parece que o teu navegador non ten Java activado. Helios precisa Java para realizar o cifrado no "
+"navegador."
+
+#: heliosbooth/js/i18n.js:63
+msgid "You may be able to install Java by visiting java.com."
+msgstr "Podes probar a instalar Java visitando java.com."
+
+#: heliosbooth/js/i18n.js:64
+msgid "Helios is now encrypting your ballot"
+msgstr "Helios está cifrando agora a túa papeleta"
+
+#: heliosbooth/js/i18n.js:65
+msgid "This may take up to two minutes."
+msgstr "Isto pode tardar ata dous minutos."
+
+#: heliosbooth/js/i18n.js:68
+msgid "<b>Select</b> your preferred options."
+msgstr "<b>Selecciona</b> as opcións que prefiras."
+
+#: heliosbooth/js/i18n.js:69
+msgid "<b>Review</b> your choices, which are then encrypted."
+msgstr "<b>Revisa</b> as túas eleccións, que despois se cifrarán."
+
+#: heliosbooth/js/i18n.js:70
+msgid "<b>Submit</b> your encrypted ballot and authenticate to verify your eligibility."
+msgstr "<b>Envía</b> a papeleta cifrada e identifícate para verificar que tes dereito a votar."
+
+#: heliosbooth/js/i18n.js:71
+msgid "To vote, follow these steps:"
+msgstr "Para votar, segue estes pasos:"
+
+#: heliosbooth/js/i18n.js:73
+msgid "The public key for this election is not yet ready. This election is in preview mode only."
+msgstr ""
+"A clave pública desta elección aínda non está preparada. Esta elección está só en modo de "
+"previsualización."
+
+#: heliosbooth/js/i18n.js:74
+msgid "Review your Ballot"
+msgstr "Revisa a túa papeleta"
+
+#: heliosbooth/js/i18n.js:75
+msgid "Your ballot tracker is"
+msgstr "O código de seguimento da túa papeleta é"
+
+#: heliosbooth/js/i18n.js:76
+msgid "Your audited ballot"
+msgstr "A túa papeleta auditada"
+
+#: heliosbooth/js/i18n.js:77
+msgid "<b><u>IMPORTANT</u></b>: this ballot, now that it has been audited, <em>will not be tallied</em>."
+msgstr "<b><u>IMPORTANTE</u></b>: esta papeleta, ao ser auditada, <em>non se incluirá no escrutinio</em>."
+
+#: heliosbooth/js/i18n.js:78
+msgid ""
+"To cast a ballot, you must click the \"Back to Voting\" button below, re-encrypt it, and choose "
+"\"cast\" instead of \"audit.\""
+msgstr ""
+"Para emitir unha papeleta, debes premer o botón «Volver á votación», cifrala de novo e escoller "
+"«emitir» en vez de «auditar»."
+
+#: heliosbooth/js/i18n.js:79
+msgid ""
+"<b>Why?</b> Helios prevents you from auditing and casting the same ballot to provide you with "
+"some protection against coercion."
+msgstr ""
+"<b>Por que?</b> Helios impide auditar e emitir a mesma papeleta para ofrecer certa protección "
+"fronte á coacción."
+
+#: heliosbooth/js/i18n.js:80
+msgid "<b>Now what?</b> Copy the audit information below and use the ballot verifier to verify it."
+msgstr ""
+"<b>E agora?</b> Copia a información de auditoría que aparece abaixo e utiliza o verificador de "
+"papeletas para comprobala."
+
+#: heliosbooth/js/i18n.js:81
+msgid "Select your ballot audit info"
+msgstr "Seleccionar a información de auditoría da papeleta"
+
+#: heliosbooth/js/i18n.js:82
+msgid "ballot verifier"
+msgstr "verificador de papeletas"
+
+#: heliosbooth/js/i18n.js:83
+msgid "Once you are satisfied, click the \"Back to Voting\" button to re-encrypt and cast your ballot."
+msgstr "Cando esteas conforme, preme o botón «Volver á votación» para cifrar de novo e emitir a papeleta."
+
+#: heliosbooth/js/i18n.js:84
+msgid ""
+"Before going back to voting, you can post this audited ballot to the Helios tracking center so "
+"that others might double-check the verification of this ballot."
+msgstr ""
+"Antes de volver á votación, podes publicar esta papeleta auditada no centro de seguimento de "
+"Helios para que outras persoas poidan comprobar de novo a súa verificación."
+
+#: heliosbooth/js/i18n.js:85
+msgid ""
+"<b>Even if you post your audited ballot, you must go back to voting and choose \"cast\" if you "
+"want your vote to count.</b>"
+msgstr ""
+"<b>Aínda que publiques a papeleta auditada, debes volver á votación e escoller «emitir» se queres"
+" que o teu voto conte.</b>"
+
+#: heliosbooth/js/i18n.js:86
+msgid ""
+"If you choose, you can spoil this ballot and reveal how your choices were encrypted. This is an "
+"optional auditing process."
+msgstr ""
+"Se o desexas, podes anular esta papeleta e revelar como se cifraron as túas eleccións. É un "
+"proceso de auditoría opcional."
+
+#: heliosbooth/js/i18n.js:87
+msgid "You will then be guided to re-encrypt your choices for final casting."
+msgstr "A continuación guiarémoste para cifrar de novo as túas eleccións antes da emisión definitiva."
+
+#: heliosbooth/js/i18n.js:91
+#, python-format
+msgid "You need to select at least %(minimum)s answer."
+msgid_plural "You need to select at least %(minimum)s answers."
+msgstr[0] "Debes seleccionar polo menos %(minimum)s resposta."
+msgstr[1] "Debes seleccionar polo menos %(minimum)s respostas."
+
+#: heliosbooth/js/i18n.js:102
+#, python-format
+msgid "You may select up to %(maximum)s choice in total."
+msgid_plural "You may select up to %(maximum)s choices in total."
+msgstr[0] "Podes seleccionar como máximo %(maximum)s opción en total."
+msgstr[1] "Podes seleccionar como máximo %(maximum)s opcións en total."
+
+#: heliosbooth/js/i18n.js:113
+#, python-format
+msgid "Question %(current)s of %(total)s"
+msgstr "Pregunta %(current)s de %(total)s"
+
+#: heliosbooth/js/i18n.js:123
+#, python-format
+msgid "Select exactly %(maximum)s answer."
+msgid_plural "Select exactly %(maximum)s answers."
+msgstr[0] "Selecciona exactamente %(maximum)s resposta."
+msgstr[1] "Selecciona exactamente %(maximum)s respostas."
+
+#: heliosbooth/js/i18n.js:132
+#, python-format
+msgid "Select between %(minimum)s and %(maximum)s answers."
+msgstr "Selecciona entre %(minimum)s e %(maximum)s respostas."
+
+#: heliosbooth/js/i18n.js:137
+#, python-format
+msgid "Select at least %(minimum)s answer."
+msgid_plural "Select at least %(minimum)s answers."
+msgstr[0] "Selecciona polo menos %(minimum)s resposta."
+msgstr[1] "Selecciona polo menos %(minimum)s respostas."
+
+#: heliosbooth/js/i18n.js:148
+#, python-format
+msgid "Select up to %(maximum)s answer."
+msgid_plural "Select up to %(maximum)s answers."
+msgstr[0] "Selecciona como máximo %(maximum)s resposta."
+msgstr[1] "Selecciona como máximo %(maximum)s respostas."
+
+#: heliosbooth/js/i18n.js:157
+msgid "Select as many answers as you approve of."
+msgstr "Selecciona tantas respostas como consideres axeitadas."
+
+#: heliosbooth/js/i18n.js:163
+#, python-format
+msgid "%(count)s selection; exactly %(maximum)s required."
+msgid_plural "%(count)s selections; exactly %(maximum)s required."
+msgstr[0] "%(count)s selección; requírese exactamente %(maximum)s."
+msgstr[1] "%(count)s seleccións; requírense exactamente %(maximum)s."
+
+#: heliosbooth/js/i18n.js:169
+#, python-format
+msgid "%(count)s selection; up to %(maximum)s allowed."
+msgid_plural "%(count)s selections; up to %(maximum)s allowed."
+msgstr[0] "%(count)s selección; permítese un máximo de %(maximum)s."
+msgstr[1] "%(count)s seleccións; permítese un máximo de %(maximum)s."
+
+#: heliosbooth/js/i18n.js:175
+#, python-format
+msgid "%(count)s selection; between %(minimum)s and %(maximum)s allowed."
+msgid_plural "%(count)s selections; between %(minimum)s and %(maximum)s allowed."
+msgstr[0] "%(count)s selección; permítense entre %(minimum)s e %(maximum)s."
+msgstr[1] "%(count)s seleccións; permítense entre %(minimum)s e %(maximum)s."
+
+#: heliosbooth/js/i18n.js:190
+#, python-format
+msgid ""
+"There appears to be a problem with the encryption process. Please email %(help_email)s and "
+"indicate that your encryption process froze at %(percentage)s%%."
+msgstr ""
+"Parece que hai un problema co proceso de cifrado. Escribe a %(help_email)s e indica que o proceso"
+" de cifrado quedou bloqueado no %(percentage)s%%."
+
+#: heliosbooth/js/i18n.js:195
+msgid ""
+"This audited ballot has been posted. Remember, this vote will only be used for auditing and will "
+"not be tallied. Click \"Back to Voting\" and cast a new ballot to make sure your vote counts."
+msgstr ""
+"Esta papeleta auditada publicouse. Lembra que este voto só se usará para auditoría e non se "
+"incluirá no escrutinio. Preme «Volver á votación» e emite unha nova papeleta para asegurarte de "
+"que o teu voto conta."
+
+#: heliosbooth/js/i18n.js:199
+#, python-format
+msgid "Your ballot tracker for %(election_name)s: %(tracker)s"
+msgstr "Código de seguimento da túa papeleta para %(election_name)s: %(tracker)s"
+
+#: heliosbooth/js/i18n.js:206
+#, python-format
+msgid "Help with election %(election_name)s"
+msgstr "Axuda coa elección %(election_name)s"
+
+#: heliosbooth/js/i18n.js:213
+#, python-format
+msgid "I need help with election %(election_uuid)s"
+msgstr "Preciso axuda coa elección %(election_uuid)s"
+
+#: heliosbooth/js/verifier-i18n.js:31
+msgid "Helios Single-Ballot Verifier"
+msgstr "Verificador de papeletas individuais de Helios"
+
+#: heliosbooth/js/verifier-i18n.js:32
+msgid "Loading verifier..."
+msgstr "Cargando o verificador..."
+
+#: heliosbooth/js/verifier-i18n.js:33
+msgid "Your browser does not have the Java plugin installed."
+msgstr "O teu navegador non ten instalado o complemento de Java."
+
+#: heliosbooth/js/verifier-i18n.js:34
+msgid ""
+"At this time, the Java plugin is required for browser-based ballot auditing, although it is not "
+"required for ballot preparation."
+msgstr ""
+"Neste momento, o complemento de Java é necesario para auditar papeletas no navegador, aínda que "
+"non é necesario para preparar a papeleta."
+
+#: heliosbooth/js/verifier-i18n.js:35
+msgid ""
+"This single-ballot verifier lets you enter an audited ballot and verify that it was prepared "
+"correctly."
+msgstr ""
+"Este verificador permite introducir unha papeleta auditada e comprobar que se preparou "
+"correctamente."
+
+#: heliosbooth/js/verifier-i18n.js:36
+msgid "Enter the Election URL:"
+msgstr "Introduce o URL da elección:"
+
+#: heliosbooth/js/verifier-i18n.js:37
+msgid "Your Ballot:"
+msgstr "A túa papeleta:"
+
+#: heliosbooth/js/verifier-i18n.js:38
+msgid "Verify"
+msgstr "Verificar"
+
+#: heliosbooth/js/verifier-i18n.js:40
+msgid "Loading election..."
+msgstr "Cargando a elección..."
+
+#: heliosbooth/js/verifier-i18n.js:41
+msgid ""
+"It looks like you are trying to verify a cast ballot. That can't be done; only audited ballots "
+"can be verified."
+msgstr ""
+"Parece que estás tentando verificar unha papeleta xa emitida. Isto non se pode facer; só se poden"
+" verificar papeletas auditadas."
+
+#: heliosbooth/js/verifier-i18n.js:42
+msgid "Verification successful. Done."
+msgstr "Verificación correcta. Rematado."
+
+#: heliosbooth/js/verifier-i18n.js:43
+msgid "Problem: this ballot does not verify."
+msgstr "Problema: esta papeleta non supera a verificación."
+
+#: heliosbooth/js/verifier-i18n.js:44
+msgid "Problem loading the election. Are you sure you have the right election URL?"
+msgstr "Problema ao cargar a elección. Comproba que o URL da elección é correcto."
+
+#: heliosbooth/js/verifier-i18n.js:46
+#, python-format
+msgid "Election fingerprint is %(hash)s"
+msgstr "A pegada dixital da elección é %(hash)s"
+
+#: heliosbooth/js/verifier-i18n.js:47
+#, python-format
+msgid "Ballot tracker is %(tracker)s"
+msgstr "O código de seguimento da papeleta é %(tracker)s"
+
+#: heliosbooth/js/verifier-i18n.js:48
+msgid "Election fingerprint matches ballot"
+msgstr "A pegada dixital da elección coincide coa da papeleta"
+
+#: heliosbooth/js/verifier-i18n.js:49
+msgid "Problem: election fingerprint does not match"
+msgstr "Problema: a pegada dixital da elección non coincide"
+
+#: heliosbooth/js/verifier-i18n.js:50
+msgid "Ballot contents:"
+msgstr "Contido da papeleta:"
+
+#: heliosbooth/js/verifier-i18n.js:51
+msgid ""
+"Warning: the tally type for this question is not homomorphic. Verification may fail because this "
+"verifier only handles homomorphic ballots."
+msgstr ""
+"Aviso: o tipo de escrutinio desta pregunta non é homomórfico. A verificación pode fallar porque "
+"este verificador só admite papeletas homomórficas."
+
+#: heliosbooth/js/verifier-i18n.js:52
+#, python-format
+msgid "Question %(number)s - %(short_name)s: %(answers)s"
+msgstr "Pregunta %(number)s - %(short_name)s: %(answers)s"
+
+#: heliosbooth/js/verifier-i18n.js:53
+msgid "Encryption verified"
+msgstr "Cifrado verificado"
+
+#: heliosbooth/js/verifier-i18n.js:54
+msgid "Problem: encryption does not match."
+msgstr "Problema: o cifrado non coincide."
+
+#: heliosbooth/js/verifier-i18n.js:55
+msgid "Cryptographic proofs verified."
+msgstr "Probas criptográficas verificadas."
+
+#: heliosbooth/js/verifier-i18n.js:56
+msgid "Problem: cryptographic proofs are invalid."
+msgstr "Problema: as probas criptográficas non son válidas."
+
+#: heliosbooth/js/verifier-i18n.js:57
+#, python-format
+msgid "Problem parsing the election or ballot data structures; malformed input: %(error)s"
+msgstr ""
+"Problema ao interpretar as estruturas de datos da elección ou da papeleta; a entrada ten un "
+"formato incorrecto: %(error)s"

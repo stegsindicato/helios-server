@@ -62,7 +62,7 @@ def ldap_login_view(request):
                 }
                 return HttpResponseRedirect(reverse(after))
             else:
-                error = 'Bad Username or Password'
+                error = gettext('Bad username or password')
 
     return render_template(request, 'ldapauth/login', {
             'form': form,

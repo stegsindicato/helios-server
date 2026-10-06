@@ -7,14 +7,22 @@
   <h3 class="title">{{ election.name }}
 {% if admin_p %}
 {% if not election.frozen_at %}
-<small><a class="small button" href="{% url "election@edit" election.uuid %}">{% trans "edit" %}</a></small>
+<small><a class="small button" href="{% url "election@edit" election.uuid %}">{% trans "Edit" %}</a></small>
 {% endif %}
 {% endif %}</h3>
 <!-- a div rather than a p: this block holds inline <form>s (the admin actions have to
      be POSTs so they can carry a CSRF token), and the parser would auto-close a <p> at
      the first one. -->
 <div style="padding-top:0px; margin-top:0px; margin-bottom:1em">
-<em>{% if election.private_p %}{% trans "private" %}{% else %}{% trans "public" %}{% endif %}</em> {{ election.election_type }}{% if settings.SHOW_USER_INFO %} {% blocktrans with admin_html=election.admin.display_html_small|safe %}created by <u><b>{{ admin_html }}</b></u>{% endblocktrans %}{% endif %}
+{% if settings.SHOW_USER_INFO %}
+  {% if election.election_type == "referendum" %}
+    {% if election.private_p %}{% blocktrans with admin_html=election.admin.display_html_small|safe %}<em>private referendum</em> created by <u><b>{{ admin_html }}</b></u>{% endblocktrans %}{% else %}{% blocktrans with admin_html=election.admin.display_html_small|safe %}<em>public referendum</em> created by <u><b>{{ admin_html }}</b></u>{% endblocktrans %}{% endif %}
+  {% else %}
+    {% if election.private_p %}{% blocktrans with admin_html=election.admin.display_html_small|safe %}<em>private election</em> created by <u><b>{{ admin_html }}</b></u>{% endblocktrans %}{% else %}{% blocktrans with admin_html=election.admin.display_html_small|safe %}<em>public election</em> created by <u><b>{{ admin_html }}</b></u>{% endblocktrans %}{% endif %}
+  {% endif %}
+{% else %}
+  {% if election.election_type == "referendum" %}{% if election.private_p %}{% trans "private referendum" %}{% else %}{% trans "public referendum" %}{% endif %}{% else %}{% if election.private_p %}{% trans "private election" %}{% else %}{% trans "public election" %}{% endif %}{% endif %}
+{% endif %}
 {% if election.is_archived %}
 {% trans "[archived]" %}
 {% endif %}
@@ -23,10 +31,10 @@
 <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
 {% if election.is_archived %}
 <input type="hidden" name="archive_p" value="0" />
-<button type="submit" class="small button">{% trans "unarchive it" %}</button>
+<button type="submit" class="small button">{% trans "Unarchive" %}</button>
 {% else %}
 <input type="hidden" name="archive_p" value="1" />
-<button type="submit" class="small button">{% trans "archive it" %}</button>
+<button type="submit" class="small button">{% trans "Archive" %}</button>
 {% endif %}
 </form>
 {% if election.is_archived %}
@@ -34,27 +42,27 @@
 <form method="post" action="{% url "election@delete" election_uuid=election.uuid %}" style="display:inline;" onsubmit="return confirm('{{ confirm_delete_election|escapejs }}');">
 <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
 <input type="hidden" name="delete_p" value="1" />
-<button type="submit" class="small button">{% trans "delete it" %}</button>
+<button type="submit" class="small button">{% trans "Delete" %}</button>
 </form>
 {% endif %}
 {% trans "Are you sure you want to copy this election?" as confirm_copy_election %}
 <form class="inline-action" method="post" action="{% url "election@copy" election_uuid=election.uuid %}" onsubmit="return window.confirm('{{ confirm_copy_election|escapejs }}');">
 <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-<button type="submit" class="small button">{% trans "copy" %}</button>
+<button type="submit" class="small button">{% trans "Copy" %}</button>
 </form>
 {% endif %}
 <br />
 {% if admin_p %}
 {% if not election.private_p %}
 {% if election.featured_p %}
-{% blocktrans with election_type=election.election_type %}this {{ election_type }} is featured on the front page.{% endblocktrans %}
+{% if election.election_type == "referendum" %}{% trans "This referendum is featured on the front page." %}{% else %}{% trans "This election is featured on the front page." %}{% endif %}
 {% if can_feature_p %}
-[<form class="inline-action" method="post" action="{% url "election@set-featured" election.uuid %}"><input type="hidden" name="csrf_token" value="{{csrf_token}}" /><input type="hidden" name="featured_p" value="0" /><button type="submit" class="link-button">{% trans "unfeature it" %}</button></form>]
+[<form class="inline-action" method="post" action="{% url "election@set-featured" election.uuid %}"><input type="hidden" name="csrf_token" value="{{csrf_token}}" /><input type="hidden" name="featured_p" value="0" /><button type="submit" class="link-button">{% trans "Remove from front page" %}</button></form>]
 {% endif %}
 {% else %}
-{% blocktrans with election_type=election.election_type %}this {{ election_type }} is <u>not</u> featured on the front page.{% endblocktrans %}
+{% if election.election_type == "referendum" %}{% blocktrans %}This referendum is <u>not</u> featured on the front page.{% endblocktrans %}{% else %}{% blocktrans %}This election is <u>not</u> featured on the front page.{% endblocktrans %}{% endif %}
 {% if can_feature_p %}
-[<form class="inline-action" method="post" action="{% url "election@set-featured" election.uuid %}"><input type="hidden" name="csrf_token" value="{{csrf_token}}" /><input type="hidden" name="featured_p" value="1" /><button type="submit" class="link-button">{% trans "feature it" %}</button></form>]
+[<form class="inline-action" method="post" action="{% url "election@set-featured" election.uuid %}"><input type="hidden" name="csrf_token" value="{{csrf_token}}" /><input type="hidden" name="featured_p" value="1" /><button type="submit" class="link-button">{% trans "Feature on front page" %}</button></form>]
 {% endif %}
 {% endif %}
 {% endif %}
@@ -83,14 +91,14 @@
 {% endif %}
 
 <p align="center" style="font-size: 1.5em;">
-<a href="{% url "election@questions" election.uuid %}">{% blocktrans count question_count=election.questions|length %}question ({{ question_count }}){% plural %}questions ({{ question_count }}){% endblocktrans %}</a>
+<a href="{% url "election@questions" election.uuid %}">{% blocktrans count question_count=election.questions|length %}Question ({{ question_count }}){% plural %}Questions ({{ question_count }}){% endblocktrans %}</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="{% url "election@voters@list-pretty" election.uuid %}">{% trans "voters &amp; ballots" %}</a>
+<a href="{% url "election@voters@list-pretty" election.uuid %}">{% trans "Voters &amp; ballots" %}</a>
 &nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="{% url "election@trustees@view" election.uuid %}">{% blocktrans count trustee_count=trustees|length %}trustee ({{ trustee_count }}){% plural %}trustees ({{ trustee_count }}){% endblocktrans %}</a>
+<a href="{% url "election@trustees@view" election.uuid %}">{% blocktrans count trustee_count=trustees|length %}Trustee ({{ trustee_count }}){% plural %}Trustees ({{ trustee_count }}){% endblocktrans %}</a>
 {% if admin_p %}
 &nbsp;&nbsp;|&nbsp;&nbsp;
-<a href="{% url "election@admins" election.uuid %}">{% trans "administrators" %}</a>
+<a href="{% url "election@admins" election.uuid %}">{% trans "Administrators" %}</a>
 {% endif %}
 </p>
 
@@ -120,17 +128,17 @@
 {% if not election.frozen_at %}
 {% if election.issues_before_freeze %}
 {% for issue in election.issues_before_freeze %}
-{{issue.action}}{% if forloop.last %}{% else %}, and{% endif %}<br />
+{{issue.action}}{% if forloop.last %}{% else %}, {% trans "and" %}{% endif %}<br />
 {% endfor %}
 {% else %}
-<a href="{% url "election@freeze" election.uuid %}">{% trans "freeze ballot and open election." %}</a>
+<a href="{% url "election@freeze" election.uuid %}">{% trans "Freeze ballot and open voting" %}</a>
 <br />
 {% if election.voting_starts_at %}
 {% blocktrans with start_time=election.voting_starts_at|utc_time trimmed %}
 once you do this, the election will be ready for voting and will open automatically<br />at {{ start_time }}, as per your settings.
 {% endblocktrans %}
 {% else %}
-{% trans "once you do this, the election will be immediately open for voting." %}
+{% trans "Once you do this, voting will open immediately." %}
 {% endif %}
 {% endif %}
 
@@ -141,14 +149,14 @@ once you do this, the election will be ready for voting and will open automatica
 {% trans "Tally computation is under way." %}<br />
 {% trans "Reload this page in a couple of minutes." %}
 {% else %}
-<a href="{% url "election@compute-tally" election.uuid %}">{% trans "compute encrypted tally" %}</a><br />
+<a href="{% url "election@compute-tally" election.uuid %}">{% trans "Compute encrypted tally" %}</a><br />
 {% trans "The encrypted votes will be combined into an encrypted tally. Once this is done," %}<br />
 {% trans "trustees will be asked to provide their share of the decryption." %}
 {% endif %}
 {% else %}
 
 {% if election.result %}
-<a href="{% url "election@release-result" election.uuid %}">{% trans "release result" %}</a><br />
+<a href="{% url "election@release-result" election.uuid %}">{% trans "Release result" %}</a><br />
 {% trans "The result displayed below is visible only to you." %}<br />
 {% trans "Once you release the result, it will be visible to everyone." %}
 {% else %}
@@ -156,9 +164,9 @@ once you do this, the election will be ready for voting and will open automatica
 {% if election.ready_for_decryption_combination %}
 <a href="{% url "election@combine-decryptions" election.uuid %}">
 {% if election.num_trustees == 1 %}
-{% trans "compute results" %}
+{% trans "Compute results" %}
 {% else %}
-{% trans "combine trustee decryptions and compute results" %}
+{% trans "Combine trustee decryptions and compute results" %}
 {% endif %}
 </a><br />
 {% if election.num_trustees == 1 %}
@@ -168,7 +176,7 @@ once you do this, the election will be ready for voting and will open automatica
 {% trans "Once you do this, the tally will visible to you, the administrator, only." %}
 {% endif %}
 {% else %}
-<a href="{% url "election@trustees@view" election.uuid %}">{% trans "trustees (for decryption)" %}</a>
+<a href="{% url "election@trustees@view" election.uuid %}">{% trans "Trustees (for decryption)" %}</a>
 {% endif %}
 
 {% endif %}
@@ -207,31 +215,33 @@ once you do this, the election will be ready for voting and will open automatica
 
 {% if election.voting_has_stopped %}
 <span class="highlight-box round">
-    {% trans "Election closed. Results will be released soon." %}
+    {% trans "Voting is closed. Results will be released soon." %}
 </span><br /><br />
 {% else %}
 
 {% if election.voting_has_started %}
-<a class="button" href="{{test_cookie_url}}">{% blocktrans with election_type=election.election_type %}Vote in this {{ election_type }}{% endblocktrans %}</a>
+<a class="button" href="{{test_cookie_url}}">{% if election.election_type == "referendum" %}{% trans "Vote in this referendum" %}{% else %}{% trans "Vote in this election" %}{% endif %}</a>
 <br />
 <br />
 {% if election.voting_extended_until %}
-{% blocktrans with election_type=election.election_type original_end=election.voting_ends_at|utc_time extended_end=election.voting_extended_until|utc_time trimmed %}
-This {{ election_type }} was initially scheduled to end at {{ original_end }},<br />but has been extended until {{ extended_end }}.
-{% endblocktrans %}
+{% if election.election_type == "referendum" %}
+{% blocktrans with original_end=election.voting_ends_at|utc_time extended_end=election.voting_extended_until|utc_time trimmed %}This referendum was initially scheduled to end at {{ original_end }},<br />but has been extended until {{ extended_end }}.{% endblocktrans %}
+{% else %}
+{% blocktrans with original_end=election.voting_ends_at|utc_time extended_end=election.voting_extended_until|utc_time trimmed %}This election was initially scheduled to end at {{ original_end }},<br />but has been extended until {{ extended_end }}.{% endblocktrans %}
+{% endif %}
 {% else %}
 {% if election.voting_ends_at %}
 <br />
-{% blocktrans with election_type=election.election_type end_time=election.voting_ends_at|utc_time %}This {{ election_type }} is scheduled to end at {{ end_time }}.{% endblocktrans %}
+{% if election.election_type == "referendum" %}{% blocktrans with end_time=election.voting_ends_at|utc_time %}This referendum is scheduled to end at {{ end_time }}.{% endblocktrans %}{% else %}{% blocktrans with end_time=election.voting_ends_at|utc_time %}This election is scheduled to end at {{ end_time }}.{% endblocktrans %}{% endif %}
 {% else %}
-{% blocktrans with election_type=election.election_type %}This {{ election_type }} ends at the administrator's discretion.{% endblocktrans %}
+{% if election.election_type == "referendum" %}{% trans "This referendum ends at the administrator’s discretion." %}{% else %}{% trans "This election ends at the administrator’s discretion." %}{% endif %}
 {% endif %}
 <br />
 {% endif %}
 
 {% if election.private_p and voter %}
 <br />
-{% blocktrans with voter_name=voter.name %}This election is <em>private</em>. You are signed in as eligible voter <em>{{ voter_name }}</em>.{% endblocktrans %}
+{% if election.election_type == "referendum" %}{% blocktrans with voter_name=voter.name %}This referendum is <em>private</em>. You are signed in as eligible voter <em>{{ voter_name }}</em>.{% endblocktrans %}{% else %}{% blocktrans with voter_name=voter.name %}This election is <em>private</em>. You are signed in as eligible voter <em>{{ voter_name }}</em>.{% endblocktrans %}{% endif %}
 {% endif %}
 
 <div class="highlight-box round" style="font-size: 1.2em; margin-right: 400px; display:none;" id="nojava_message">
@@ -248,7 +258,7 @@ This {{ election_type }} was initially scheduled to end at {{ original_end }},<b
 {% if user %}
 {% if voter %}
 <p style="padding-top:1px;">
-  {% blocktrans with election_type=election.election_type %}You are registered to vote in this {{ election_type }}.{% endblocktrans %}
+  {% if election.election_type == "referendum" %}{% trans "You are registered to vote in this referendum." %}{% else %}{% trans "You are registered to vote in this election." %}{% endif %}
 {% if election.use_voter_aliases %}
 {% blocktrans with voter_alias=voter.alias %}Your voter alias is {{ voter_alias }}.{% endblocktrans %}
 {% endif %}
@@ -259,12 +269,12 @@ This {{ election_type }} was initially scheduled to end at {{ original_end }},<b
 {% else %}
 {% if election.openreg %}
 {% if eligible_p %}
-{% trans "You are eligible to vote in this election." %}
+{% if election.election_type == "referendum" %}{% trans "You are eligible to vote in this referendum." %}{% else %}{% trans "You are eligible to vote in this election." %}{% endif %}
 {% else %}
-{% blocktrans with election_type=election.election_type %}You are <em>not eligible</em> to vote in this {{ election_type }}.{% endblocktrans %}
+{% if election.election_type == "referendum" %}{% blocktrans %}You are <em>not eligible</em> to vote in this referendum.{% endblocktrans %}{% else %}{% blocktrans %}You are <em>not eligible</em> to vote in this election.{% endblocktrans %}{% endif %}
 {% endif %}
 {% else %}
-{% blocktrans with election_type=election.election_type %}You are <em>not eligible</em> to vote in this {{ election_type }}.{% endblocktrans %}
+{% if election.election_type == "referendum" %}{% blocktrans %}You are <em>not eligible</em> to vote in this referendum.{% endblocktrans %}{% else %}{% blocktrans %}You are <em>not eligible</em> to vote in this election.{% endblocktrans %}{% endif %}
 <br />
 {% endif %}
 {% endif %}
@@ -287,7 +297,7 @@ This {{ election_type }} was initially scheduled to end at {{ original_end }},<b
 {% endif %}
 
 {% if admin_p and election.voting_ends_at and not election.tallying_started_at %}
-<br /><a href="{% url "election@extend" election.uuid %}">{% trans "extend voting" %}</a><br />
+<br /><a href="{% url "election@extend" election.uuid %}">{% trans "Extend voting" %}</a><br />
 {% endif %}
 
 <div style="background: lightyellow; padding:5px; padding-left: 10px; margin-top: 15px; border: 1px solid #aaa;" class="round">
@@ -321,7 +331,7 @@ This {{ election_type }} was initially scheduled to end at {{ original_end }},<b
 {% if not election.voting_has_started %}
 <p style="font-size: 1.2em;">
   <br>
-  <a href="{{SECURE_URL_HOST}}/booth/vote.html?election_url={% url "election@home" election.uuid %}">{% trans "preview booth" %}</a>
+  <a href="{{SECURE_URL_HOST}}/booth/vote.html?election_url={% url "election@home" election.uuid %}">{% trans "Preview voting booth" %}</a>
 </p>
 {% endif %}  
 

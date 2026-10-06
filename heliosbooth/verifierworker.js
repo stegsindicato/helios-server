@@ -39,7 +39,7 @@ function do_verify(message) {
     // json object
     VOTE = message.vote;
 
-    var result = verify_ballot(ELECTION, VOTE, status_update);
+    var result = verify_ballot(ELECTION, VOTE, status_update, message.i18n || null);
 
     // send the result back
     self.postMessage({

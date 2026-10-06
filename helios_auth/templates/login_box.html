@@ -1,16 +1,24 @@
 {% load i18n %}
 {% if default_auth_system %}
-<p>
-<a class="small button" href="{% url "auth@start" system_name=default_auth_system %}?return_url={{return_url}}">{% trans "Log in" %}</a></p>
+<p><a class="small button" href="{% url "auth@start" system_name=default_auth_system %}?return_url={{return_url}}">{% trans "Log in" %}</a></p>
 {% else %}
 {% for auth_system in enabled_auth_systems %}
-{% if auth_system == "password" %}
-{% else %}
+{% if auth_system != "password" %}
 <p>
-    <a href="{{SECURE_URL_HOST}}{% url "auth@start" system_name=auth_system %}?return_url={{return_url}}" style="font-size: 1.4em;">
-<img style="height: 35px; border: 0px;" src="/static/auth/login-icons/{{auth_system}}.png" alt="{{auth_system}}" /> {{auth_system}}
-{% endif %}
-</a>
+  <a href="{{SECURE_URL_HOST}}{% url "auth@start" system_name=auth_system %}?return_url={{return_url}}" style="font-size: 1.4em;">
+    <img style="height: 35px; border: 0px;" src="/static/auth/login-icons/{{auth_system}}.png" alt="{{auth_system}}" />
+    {% if auth_system == "google" %}{% trans "Log in with Google" %}
+    {% elif auth_system == "github" %}{% trans "Log in with GitHub" %}
+    {% elif auth_system == "gitlab" %}{% trans "Log in with GitLab" %}
+    {% elif auth_system == "linkedin" %}{% trans "Log in with LinkedIn" %}
+    {% elif auth_system == "facebook" %}{% trans "Log in with Facebook" %}
+    {% elif auth_system == "yahoo" %}{% trans "Log in with Yahoo" %}
+    {% elif auth_system == "cas" %}{% trans "Log in with institutional account" %}
+    {% elif auth_system == "ldap" %}{% trans "Log in with LDAP" %}
+    {% elif auth_system == "devlogin" %}{% trans "Development login" %}
+    {% else %}{{auth_system}}{% endif %}
+  </a>
 </p>
+{% endif %}
 {% endfor %}
 {% endif %}

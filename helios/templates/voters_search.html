@@ -1,17 +1,9 @@
 {% extends TEMPLATE_BASE %}
-
+{% load i18n %}
 {% block content %}
-  <h2 class="title">{{election.name}} &mdash; Search Voters for '{{search_term}}' <span style="font-size:0.7em;">[<a href="{% url "election@view" election.uuid %}">back to election</a>]</span></h2>
-
+<h2 class="title">{% blocktrans with election_name=election.name search_term=search_term %}{{ election_name }} &mdash; Search voters for “{{ search_term }}”{% endblocktrans %} <span style="font-size:0.7em;">[<a href="{% url "election@view" election.uuid %}">{% trans "Back to election" %}</a>]</span></h2>
 {% if voter %}
-Voter Found: {{voter.name}} ({{voter.voter_id}})<br /><br />
-{% if election.frozen_at %}
-<a href="{% url "election@voters@email" election.uuid %}?voter_id={{voter.voter_id}}">email this voter</a>
-{% else %}
-once this election is frozen, you'll be able to email this voter.
-{% endif %}
-{% else %}
-<em>no such voter found</em>
-{% endif %}
-
+{% blocktrans with voter_name=voter.name voter_id=voter.voter_id %}Voter found: {{ voter_name }} ({{ voter_id }}){% endblocktrans %}<br /><br />
+{% if election.frozen_at %}<a href="{% url "election@voters@email" election.uuid %}?voter_id={{voter.voter_id}}">{% trans "Email this voter" %}</a>{% else %}{% trans "Once the election is frozen, you will be able to email this voter." %}{% endif %}
+{% else %}<em>{% trans "No such voter found." %}</em>{% endif %}
 {% endblock %}

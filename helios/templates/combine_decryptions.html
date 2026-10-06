@@ -1,16 +1,8 @@
 {% extends TEMPLATE_BASE %}
-
-{% block title %}Compute Tally &mdash; {{election.name}}{% endblock %}
+{% load i18n %}
+{% block title %}{% blocktrans with election_name=election.name %}Compute tally — {{ election_name }}{% endblocktrans %}{% endblock %}
 {% block content %}
-  <h2 class="title">{{election.name}} &mdash; Compute Tally <span style="font-size:0.7em;">[<a href="{% url "election@view" election.uuid %}">cancel</a>]</span></h2>
-
-  <p>
-    You are about to compute the tally for this election. You only will then see the results.
-  </p>
-
-  <form method="POST" action="">
-    <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-    <input type="submit" class="button" value="compute the tally!" />
-  </form>
-
+  <h2 class="title">{% blocktrans with election_name=election.name %}{{ election_name }} &mdash; Compute tally{% endblocktrans %} <span style="font-size:0.7em;">[<a href="{% url "election@view" election.uuid %}">{% trans "Cancel" %}</a>]</span></h2>
+  <p>{% trans "You are about to compute the tally for this election. The results will initially be visible only to administrators." %}</p>
+  <form method="POST" action=""><input type="hidden" name="csrf_token" value="{{csrf_token}}" /><input type="submit" class="button" value="{% trans 'Compute the tally' %}" /></form>
 {% endblock %}

@@ -1,15 +1,8 @@
 {% extends TEMPLATE_BASE %}
-{% block title %}Statistics{% endblock %}
-
+{% load i18n %}
+{% block title %}{% trans "Statistics" %}{% endblock %}
 {% block content %}
-<h1>Recent Votes</h1>
-
-Last 24 hours
-
-{% for election in elections %}
-<p>
-<b><a href="{% url "election@view" election.uuid %}">{{election.name}}</a></b> -- {{election.last_cast_vote}} {{election.num_recent_cast_votes}} recently cast votes
-</p>
-{% endfor %}
-
+<h1>{% trans "Recent votes" %}</h1>
+<p>{% trans "Last 24 hours" %}</p>
+{% for election in elections %}{% url 'election@view' election.uuid as election_url %}<p>{% blocktrans with election_name=election.name last_vote=election.last_cast_vote recent_votes=election.num_recent_cast_votes %}<b><a href="{{ election_url }}">{{ election_name }}</a></b> — last vote: {{ last_vote }}; {{ recent_votes }} recently cast votes{% endblocktrans %}</p>{% endfor %}
 {% endblock %}

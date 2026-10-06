@@ -26,7 +26,20 @@
 <script language="javascript" src="/static/20140302-helios-combined.js"></script>
 {% endif %}
 
-  <script language="javascript" src="/static/helios/timezone-display.js"></script></script>
+  {% trans "Universal Coordinated Time" as utc_title %}
+  {% trans "Your local timezone" as local_timezone_title %}
+  {% trans "This time is:" as this_time_is %}
+  {% trans "Local" as local_label %}
+  <script>
+    window.HELIOS_I18N = window.HELIOS_I18N || {};
+    window.HELIOS_I18N.timezone = {
+      utcTitle: "{{ utc_title|escapejs }}",
+      localTimezoneTitle: "{{ local_timezone_title|escapejs }}",
+      thisTimeIs: "{{ this_time_is|escapejs }}",
+      localLabel: "{{ local_label|escapejs }}"
+    };
+  </script>
+  <script language="javascript" src="/static/helios/timezone-display.js"></script>
 
   {% block js %}
   {% endblock %}

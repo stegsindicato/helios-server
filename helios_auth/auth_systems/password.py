@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import re_path
-from django.utils.translation import gettext
+from django.utils.translation import gettext, gettext_lazy
 
 from helios_auth import url_names
 from helios_auth.utils import format_recipient
@@ -35,8 +35,8 @@ def create_user(username, password, name = None):
   user.save()
 
 class LoginForm(forms.Form):
-  username = forms.CharField(max_length=50)
-  password = forms.CharField(widget=forms.PasswordInput(), max_length=100)
+  username = forms.CharField(max_length=50, label=gettext_lazy("Username"))
+  password = forms.CharField(widget=forms.PasswordInput(), max_length=100, label=gettext_lazy("Password"))
 
 def password_check(user, password):
   return (user and user.info['password'] == password)
@@ -73,7 +73,7 @@ def password_login_view(request):
           return HttpResponseRedirect(reverse(url_names.AUTH_AFTER))
       except User.DoesNotExist:
         pass
-      error = 'Bad Username or Password'
+      error = gettext('Bad username or password')
   
   return render_template(request, 'password/login', {'form': form, 'error': error})
     

@@ -1,43 +1,26 @@
 {% extends TEMPLATE_BASE %}
-
+{% load i18n %}
 {% block content %}
-  <h2 class="title">{{election.name}} &mdash; Freeze Ballot</h2>
-<p>
-Once an election is frozen, the questions, options, and trustees can no longer be modified.<br />
-</p>
-
+  <h2 class="title">{% blocktrans with election_name=election.name %}{{ election_name }} &mdash; Freeze ballot{% endblocktrans %}</h2>
+<p>{% trans "Once an election is frozen, the questions, options, and trustees can no longer be modified." %}</p>
 <p>
 {% if election.openreg %}
-Registration for your election is currently <b>open</b>, which means anyone can vote, even after you freeze the ballot.
+{% blocktrans %}Registration for your election is currently <b>open</b>, which means anyone can vote, even after you freeze the ballot.{% endblocktrans %}
 {% else %}
-Registration for your election is currently <b>closed</b>, which means only the voters you designate will be able to cast a ballot. As the administrator, you will still be able to modify that voter list as the election progresses.
+{% blocktrans %}Registration for your election is currently <b>closed</b>, which means only the voters you designate will be able to cast a ballot. As an administrator, you will still be able to modify that voter list while voting is open.{% endblocktrans %}
 {% endif %}
-</p>    
-
-{% if helios.VOTERS_EMAIL %}
-<p>
-You must freeze the ballot before you can contact voters.
 </p>
-{% endif %}
-
+{% if helios.VOTERS_EMAIL %}<p>{% trans "You must freeze the ballot before you can contact voters." %}</p>{% endif %}
 {% if issues_p %}
-<p>
-    Before you can freeze the election, you will need to:
-    <ul>
-        {% for issue in issues %}
-        <li>{{issue.action}}</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url "election@view" election.uuid %}">go back to the election</a>
-</p>
+<p>{% trans "Before you can freeze the election, you need to:" %}</p>
+<ul>{% for issue in issues %}<li>{{issue.action}}</li>{% endfor %}</ul>
+<a href="{% url "election@view" election.uuid %}">{% trans "Back to election" %}</a>
 {% else %}
 <form method="post" action="">
 <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-    
-<input class="button" type="submit" value="Freeze the ballot" />
-<button class="button" onclick="document.location='{% url "election@view" election.uuid %}'; return false;">do NOT freeze yet</button>
+<input class="button" type="submit" value="{% trans 'Freeze the ballot' %}" />
+<button class="button" onclick="document.location='{% url "election@view" election.uuid %}'; return false;">{% trans "Do not freeze yet" %}</button>
 </form>
 {% endif %}
-
 <br /><br />
 {% endblock %}

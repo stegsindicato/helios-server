@@ -3,7 +3,9 @@ Facebook Authentication
 """
 
 from django.conf import settings
+from django.utils.translation import gettext_lazy
 from django.core.mail import send_mail
+from django.utils.translation import gettext
 
 APP_ID = settings.FACEBOOK_APP_ID
 API_KEY = settings.FACEBOOK_API_KEY
@@ -14,7 +16,7 @@ import urllib.request, urllib.error, urllib.parse
 
 # some parameters to indicate that status updating is possible
 STATUS_UPDATES = True
-STATUS_UPDATE_WORDING_TEMPLATE = "Send %s to your facebook status"
+STATUS_UPDATE_WORDING_TEMPLATE = gettext_lazy("Send %s to your Facebook status")
 
 from helios_auth import utils
 from helios_auth.utils import format_recipient
@@ -114,7 +116,7 @@ def eligibility_category_id(constraint):
   return constraint['group']['id']
 
 def pretty_eligibility(constraint):
-  return "Facebook users who are members of the \"%s\" group" % constraint['group']['name']
+  return gettext('Facebook users who are members of the “%(group_name)s” group') % {'group_name': constraint['group']['name']}
 
 #
 # Election Creation

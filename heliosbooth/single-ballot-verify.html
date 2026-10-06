@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="gl" lang="gl">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta charset="UTF-8">
@@ -15,13 +15,15 @@
   <script language="javascript" src="js/jquery-jtemplates.js"></script>
   <script language="javascript" src="js/jquery.json.min.js"></script>
   <script language="javascript" src="js/jquery.query-2.1.5.js"></script>
+  <script language="javascript" src="/jsi18n/"></script>
+  <script language="javascript" src="js/verifier-i18n.js"></script>
 
   <script language="javascript">
     // required for jscrypto library
     var JSCRYPTO_HOME = document.location.pathname.replace("single-ballot-verify.html", "js/jscrypto");
   </script>
 
-  <script language="javascript" src="js/jscrypto/class.js"></script>  
+  <script language="javascript" src="js/jscrypto/class.js"></script>
   <script language="javascript" src="js/jscrypto/bigint.js"></script>
   <script language="javascript" src="js/jscrypto/random.js"></script>
   <script language="javascript" src="js/jscrypto/elgamal.js"></script>
@@ -33,6 +35,8 @@
 <body>
 <script language="javascript">
 $(document).ready(function() {
+    VERIFIER_I18N.applyStaticText();
+
     BigInt.setup(function() {
        $('#verifier_loading').hide();
 
@@ -43,11 +47,11 @@ $(document).ready(function() {
 
        $('#verifier').show();
        var election_url = $.query.get('election_url');
-       $('#election_url').val(election_url); 
+       $('#election_url').val(election_url);
     }, function() {
        $('#dummy_bigint').show();
     });
-});    
+});
 
 function result_append(str) {
     $('#results').append(str).append("<br />");
@@ -55,26 +59,26 @@ function result_append(str) {
 
 function verify_single_ballot(election_url, audit_trail) {
   var encrypted_vote_json = jQuery.secureEvalJSON(audit_trail);
-  
-  result_append("loading election...");
+
+  result_append(VERIFIER_I18N.messages.loadingElection);
 
   // quick and dirty detection of cast ballot
   if (encrypted_vote_json['cast_at']) {
-    result_append("\n\nIt looks like you are trying to verify a cast ballot. That can't be done, only audited ballots can be verified.");
+    result_append("<br /><br />" + VERIFIER_I18N.messages.castBallotWarning);
     return;
   }
-  
+
   $('#loading').show();
-  
+
   var after_computation = function(overall_result) {
     result_append("<br />");
-    
+
     $('#loading').hide();
-    
+
     if (overall_result) {
-       result_append('SUCCESSFUL VERIFICATION, DONE!');
+       result_append(VERIFIER_I18N.messages.successfulVerification);
     } else {
-       result_append('PROBLEM - THIS BALLOT DOES NOT VERIFY.');        
+       result_append(VERIFIER_I18N.messages.failedVerification);
     }
   };
 
@@ -85,7 +89,7 @@ function verify_single_ballot(election_url, audit_trail) {
       verifier_worker.onmessage = function(event) {
         if (event.data.type == 'log')
           return console.log(event.data.msg);
-       
+
         if (event.data.type == 'status')
           return result_append(event.data.msg);
 
@@ -93,53 +97,47 @@ function verify_single_ballot(election_url, audit_trail) {
           return after_computation(event.data.result);
       };
 
-      verifier_worker.postMessage({'type':'verify', 'election':raw_json, 'vote':encrypted_vote_json});
+      verifier_worker.postMessage({'type':'verify', 'election':raw_json, 'vote':encrypted_vote_json, 'i18n':VERIFIER_I18N.messages});
     } else {
-      var overall_result = verify_ballot(raw_json, encrypted_vote_json, result_append);
+      var overall_result = verify_ballot(raw_json, encrypted_vote_json, result_append, VERIFIER_I18N.messages);
       after_computation(overall_result);
     }
   }, error: function() {
-      result_append('PROBLEM LOADING election. Are you sure you have the right election URL?<br />');
+      result_append(VERIFIER_I18N.messages.electionLoadProblem);
 
       $('#loading').hide();
-      
-      result_append('PROBLEM - THIS BALLOT DOES NOT VERIFY.');        
+
+      result_append(VERIFIER_I18N.messages.failedVerification);
   }
   });
 }
 
 </script>
-</head>
-<body>
 <div id="wrapper">
-<h2 style="padding-left: 10px;">Helios Single-Ballot Verifier</h2>
+<h2 id="verifier_title" style="padding-left: 10px;">Helios Single-Ballot Verifier</h2>
 <div id="content">
 
-<div id="verifier_loading">
-Loading verifier...
-</div>
+<div id="verifier_loading">Loading verifier...</div>
 
 <div id="dummy_bigint" style="display:none;">
-Your browser does not have the Java plugin installed.<br /><br />
-At this time, the Java plugin is required for browser-based ballot auditing, although it is not required for ballot preparation.
+<span id="dummy_bigint_primary">Your browser does not have the Java plugin installed.</span><br /><br />
+<span id="dummy_bigint_secondary">At this time, the Java plugin is required for browser-based ballot auditing, although it is not required for ballot preparation.</span>
 </div>
 
 <div id="verifier" style="display:none;">
-<p style="font-size: 16pt;">
-    This single-ballot verifier lets you enter an audited ballot<br />and verify that it was prepared correctly.
+<p id="verifier_description" style="font-size: 16pt;">
+    This single-ballot verifier lets you enter an audited ballot and verify that it was prepared correctly.
 </p>
 
 <form onsubmit="try {verify_single_ballot(this.election_url.value, this.audit_trail.value);} catch (e) {E = e;} return false;">
-Enter the Election URL:
+<label id="election_url_label" for="election_url">Enter the Election URL:</label>
     <input type="text" size="50" name="election_url" id="election_url" /><br />
 
-<p>
-Your Ballot:
-</p>
+<p id="ballot_label">Your Ballot:</p>
 
 <textarea name="audit_trail" cols="80" rows="7">
 </textarea><br /><br />
-<input type="submit" class="pretty" value="Verify" />
+<input id="verify_button" type="submit" class="pretty" value="Verify" />
 </form>
 
 <br /><br />

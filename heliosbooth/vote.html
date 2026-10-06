@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="gl">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta charset="UTF-8">
@@ -25,14 +25,16 @@
   <script language="javascript" src="js/jscrypto/sha2.js"></script>
   <script language="javascript" src="js/jscrypto/helios.js"></script>-->
   
+  <script language="javascript" src="/jsi18n/"></script>
   <script language="javascript" src="js/20160507-helios-booth-compressed.js"></script>
+  <script language="javascript" src="js/i18n.js"></script>
 </head>
 
 <body>
 <div id="wrapper">
 <div id="banner" class="edge">
-  <div style="text-align:center; width: 100%;">Helios Voting Booth
-      <div style="float: right; margin-right: 10px; font-size: 0.8em;"><span><a href="javascript:BOOTH.exit();">exit</a></span></div>
+  <div style="text-align:center; width: 100%;"><span id="booth_title">Helios Voting Booth</span>
+      <div style="float: right; margin-right: 10px; font-size: 0.8em;"><span><a id="exit_link" href="javascript:BOOTH.exit();">Exit</a></span></div>
   </div>
 </div>
 <div id="content">
@@ -43,6 +45,12 @@
 <script language="javascript">
 // utils
 BOOTH = {};
+
+BOOTH.template_data = function(data) {
+  data = data || {};
+  data.i18n = BOOTH_I18N;
+  return data;
+};
 
 BOOTH.setup_templates = function() {
     if (BOOTH.templates_setup_p)
@@ -71,7 +79,7 @@ window.onbeforeunload = function(evt) {
     evt = window.event;
   }
 
-  var message = "If you leave this page with an in-progress ballot, your ballot will be lost.";
+  var message = BOOTH_I18N.leaveWarning;
 
   if (evt) {
     evt.returnValue = message;
@@ -81,7 +89,7 @@ window.onbeforeunload = function(evt) {
 };
 
 BOOTH.exit = function() {
-    if (confirm("Are you sure you want to exit the booth and lose all information about your current ballot?")) {
+    if (confirm(BOOTH_I18N.exitConfirm)) {
         BOOTH.started_p = false;
         window.location = BOOTH.election.cast_url;
     }
@@ -162,6 +170,7 @@ BOOTH.setup_election = function(raw_json, election_metadata) {
   // the main reason for this is unicode representation: the Python approach
   // appears to be safer.
   BOOTH.election = HELIOS.Election.fromJSONString(raw_json);
+  BOOTH.election_name_for_messages = BOOTH.election.name;
 
   // FIXME: we shouldn't need to set both, but right now we are doing so
   // because different code uses each one. Bah. Need fixing.
@@ -171,7 +180,7 @@ BOOTH.setup_election = function(raw_json, election_metadata) {
   // async?
   BOOTH.setup_workers(raw_json);
 
-  document.title += ' - ' + BOOTH.election.name;
+  document.title = BOOTH_I18N.votingBooth + ' - ' + BOOTH.election_name_for_messages;
 
   // escape election fields
   $(['description', 'name']).each(function(i, field) {
@@ -198,8 +207,8 @@ BOOTH.setup_election = function(raw_json, election_metadata) {
     BOOTH.election.question_answer_orderings[i] = ordering;
   });
 
-  $('#header').processTemplate({'election' : BOOTH.election, 'election_metadata': BOOTH.election_metadata});
-  $('#footer').processTemplate({'election' : BOOTH.election, 'election_metadata': BOOTH.election_metadata});
+  $('#header').processTemplate(BOOTH.template_data({'election' : BOOTH.election, 'election_metadata': BOOTH.election_metadata}));
+  $('#footer').processTemplate(BOOTH.template_data({'election' : BOOTH.election, 'election_metadata': BOOTH.election_metadata}));
   BOOTH.setup_ballot();
 };
 
@@ -210,7 +219,10 @@ BOOTH.show = function(el) {
 };
 
 BOOTH.show_election = function() {
-  BOOTH.show($('#election_div')).processTemplate({'election' : BOOTH.election, 'election_metadata': BOOTH.election_metadata});
+  var help_mailto = 'mailto:' + encodeURIComponent(BOOTH.election_metadata.help_email || '') +
+                    '?subject=' + encodeURIComponent(BOOTH_I18N.helpSubject(BOOTH.election_name_for_messages)) +
+                    '&body=' + encodeURIComponent(BOOTH_I18N.helpBody(BOOTH.election.uuid));
+  BOOTH.show($('#election_div')).processTemplate(BOOTH.template_data({'election' : BOOTH.election, 'election_metadata': BOOTH.election_metadata, 'help_mailto': help_mailto}));
 };
 
 BOOTH.launch_async_encryption_answer = function(question_num) {
@@ -229,7 +241,7 @@ BOOTH.launch_async_encryption_answer = function(question_num) {
 BOOTH.validate_question = function(question_num) {
     // check if enough answers are checked
     if (BOOTH.ballot.answers[question_num].length < BOOTH.election.questions[question_num].min) {
-        alert('You need to select at least ' + BOOTH.election.questions[question_num].min + ' answer(s).');
+        alert(BOOTH_I18N.minimumAnswers(BOOTH.election.questions[question_num].min));
         return false;
     }
 
@@ -293,11 +305,16 @@ BOOTH.show_question = function(question_num) {
     BOOTH.all_questions_seen = true;
 
   BOOTH.show_progress('1');
-  BOOTH.show($('#question_div')).processTemplate({'question_num' : question_num,
+  var current_question = BOOTH.election.questions[question_num];
+  BOOTH.show($('#question_div')).processTemplate(BOOTH.template_data({
+                      'question_num' : question_num,
                       'last_question_num' : BOOTH.election.questions.length - 1,
-                      'question' : BOOTH.election.questions[question_num], 'show_reviewall' : BOOTH.all_questions_seen,
-		      'answer_ordering': BOOTH.election.question_answer_orderings[question_num]
-                });
+                      'question' : current_question,
+                      'show_reviewall' : BOOTH.all_questions_seen,
+                      'answer_ordering': BOOTH.election.question_answer_orderings[question_num],
+                      'question_position': BOOTH_I18N.questionPosition(question_num + 1, BOOTH.election.questions.length),
+                      'selection_instruction': BOOTH_I18N.selectionInstruction(current_question.min, current_question.max)
+                }));
 
   // fake clicking through the answers, to trigger the disabling if need be
   // first we remove the answers array
@@ -342,7 +359,7 @@ BOOTH.click_checkbox = function(question_num, answer_num, checked_p) {
 
      // do the warning only if the question allows more than one option, otherwise it's confusing
      if (BOOTH.election.questions[question_num].max > 1) {
-        $('#warning_box').html("Maximum number of options selected.<br />To change your selection, please de-select a current selection first.");
+        $('#warning_box').html(BOOTH_I18N.maximumSelected);
      }
   } else {
      // enable the other checkboxes
@@ -351,13 +368,13 @@ BOOTH.click_checkbox = function(question_num, answer_num, checked_p) {
      });
      $('#warning_box').html("");
      if (BOOTH.election.questions[question_num].max != null && (BOOTH.ballot.answers[question_num].length < BOOTH.election.questions[question_num].max)) {
-        $('#warning_box').html("You may select up to " + BOOTH.election.questions[question_num].max + " choices total.");
+        $('#warning_box').html(BOOTH_I18N.maySelectUpTo(BOOTH.election.questions[question_num].max));
      }
   }
 };
 
 BOOTH.show_processing_before = function(str_to_execute) {
-    $('#processing_div').html("<h3 align='center'>Processing...</h3>");
+    $('#processing_div').html("<h3 align='center'>" + BOOTH_I18N.processing + "</h3>");
     BOOTH.show($('#processing_div'));
 
     // add a timeout so browsers like Safari actually display the processing message
@@ -430,6 +447,8 @@ BOOTH.nojava = function() {
 BOOTH.ready_p = false;
 
 $(document).ready(function() {
+    BOOTH_I18N.applyStaticText();
+
     if (USE_SJCL) {
       sjcl.random.startCollectors();
     }
@@ -459,7 +478,16 @@ BOOTH._after_ballot_encryption = function() {
     };
 
     var show_cast = function() {
-      $('#seal_div').processTemplate({'cast_url': BOOTH.election.cast_url,
+      var pretty_choices = BALLOT.pretty_choices(BOOTH.election, BOOTH.ballot);
+      var choice_summaries = [];
+      $(BOOTH.election.questions).each(function(question_index, question) {
+        choice_summaries[question_index] = BOOTH_I18N.selectionSummary(
+          pretty_choices[question_index].length,
+          question.min,
+          question.max
+        );
+      });
+      $('#seal_div').processTemplate(BOOTH.template_data({'cast_url': BOOTH.election.cast_url,
         'encrypted_vote_json': BOOTH.encrypted_vote_json,
         'encrypted_vote_hash' : BOOTH.encrypted_ballot_hash,
         'election_uuid' : BOOTH.election.uuid,
@@ -467,7 +495,8 @@ BOOTH._after_ballot_encryption = function() {
         'election': BOOTH.election,
         'election_metadata': BOOTH.election_metadata,
         'questions' : BOOTH.election.questions,
-        'choices' : BALLOT.pretty_choices(BOOTH.election, BOOTH.ballot)});
+        'choices' : pretty_choices,
+        'choice_summaries': choice_summaries}));
       BOOTH.show($('#seal_div'));
       BOOTH.encrypted_vote_json = null;
     };
@@ -485,7 +514,7 @@ BOOTH.wait_for_ciphertexts = function() {
     var percentage_done = Math.round((100 * answers_done.length) / BOOTH.encrypted_answers.length);
 
     if (BOOTH.total_cycles_waited > 250) {
-      alert('there appears to be a problem with the encryption process.\nPlease email help@heliosvoting.org and indicate that your encryption process froze at ' + percentage_done + '%');
+      alert(BOOTH_I18N.encryptionProblem(percentage_done, BOOTH.election_metadata.help_email || 'help@heliosvoting.org'));
       return;
     }
 
@@ -522,12 +551,12 @@ BOOTH.seal_ballot = function() {
 BOOTH.audit_ballot = function() {
     BOOTH.audit_trail = $.toJSON(BOOTH.encrypted_ballot.get_audit_trail());
 
-    BOOTH.show($('#audit_div')).processTemplate({'audit_trail' : BOOTH.audit_trail, 'election_url' : BOOTH.election_url});
+    BOOTH.show($('#audit_div')).processTemplate(BOOTH.template_data({'audit_trail' : BOOTH.audit_trail, 'election_url' : BOOTH.election_url}));
 };
 
 BOOTH.post_audited_ballot = function() {
   $.post(BOOTH.election_url + "/post-audited-ballot", {'audited_ballot': BOOTH.audit_trail}, function(result) {
-    alert('This audited ballot has been posted.\nRemember, this vote will only be used for auditing and will not be tallied.\nClick "back to voting" and cast a new ballot to make sure your vote counts.');
+    alert(BOOTH_I18N.auditedBallotPosted);
   });
 };
 
@@ -556,7 +585,7 @@ BOOTH.cast_ballot = function() {
 };
 
 BOOTH.show_receipt = function() {
-    UTILS.open_window_with_content("Your ballot tracker for " + BOOTH.election.name + ": " + BOOTH.encrypted_ballot_hash);
+    UTILS.open_window_with_content(BOOTH_I18N.ballotTrackerFor(BOOTH.election.name, BOOTH.encrypted_ballot_hash));
 };
 
 BOOTH.do_done = function() {
@@ -568,24 +597,24 @@ BOOTH.do_done = function() {
   <div id="progress_div" style="display:none">
       <table>
           <tr>
-              <td id="progress_1">(1) Select</td>
-              <td id="progress_2">(2) Review</td>
-              <td id="progress_3">(3) Submit</td>
+              <td id="progress_1">(1) <span id="progress_select_label">Select</span></td>
+              <td id="progress_2">(2) <span id="progress_review_label">Review</span></td>
+              <td id="progress_3">(3) <span id="progress_submit_label">Submit</span></td>
           </tr>
       </table>
   </div>
   <div id="election_div" class="panel">
-    <h3>Checking capabilities and loading election booth...</h3>
-    <div align="center"><img src="loading.gif" /><br />This may take up to 10 seconds</div>
+    <h3 id="checking_capabilities">Checking capabilities and loading election booth...</h3>
+    <div align="center"><img src="loading.gif" /><br /><span id="loading_may_take">This may take up to 10 seconds.</span></div>
   </div>
 
   <div id="error_div" class="panel" style="display: none;">
-    <h3>There's a problem</h3>
-    <p>
+    <h3 id="problem_heading">There's a problem</h3>
+    <p id="java_problem">
       It appears that your browser does not have Java enabled. Helios needs Java to perform encryption within the browser.
     </p>
     <p>
-      You may be able to install Java by visiting <a target="_new" href="http://java.com">java.com</a>.
+      <span id="java_install_text">You may be able to install Java by visiting java.com.</span> <a target="_new" href="http://java.com">java.com</a>
     </p>
   </div>
 
@@ -593,14 +622,14 @@ BOOTH.do_done = function() {
   </div>
 
   <div id="processing_div" class="panel" style="display:none;">
-      <h3 align="center">Processing....</h3>
+      <h3 align="center" id="processing_heading">Processing...</h3>
   </div>
 
   <div id="encrypting_div" class="panel" style="display:none;">
-      <h3 align="center">Helios is now encrypting your ballot<br />
+      <h3 align="center"><span id="encrypting_heading">Helios is now encrypting your ballot</span><br />
           <img src="encrypting.gif" /> <span style="font-size:0.7em; display:none;" id="percent_done_container">(<span id="percent_done">0</span>%)</span></h3>
 
-      <p align="center"><b>This may take up to two minutes.</b>
+      <p align="center"><b id="encryption_may_take">This may take up to two minutes.</b>
   </div>
 
   <div id="seal_div" class="panel">

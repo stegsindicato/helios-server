@@ -1,20 +1,10 @@
 {% extends TEMPLATE_BASE %}
-
-{% block header %}
-<h2>{{ settings.SITE_TITLE }} &mdash; Password Forgotten</h2>
-{% endblock %}
-
+{% load i18n %}
+{% block header %}<h2>{% blocktrans with site_title=settings.SITE_TITLE %}{{ site_title }} &mdash; Forgotten password{% endblocktrans %}</h2>{% endblock %}
 {% block content %}
-
-{% if error %}
-<p style="border: 1px solid black; padding: 5px;">
-    {{error}}
-</p>
-{% endif %}
-
+{% if error %}<p style="border: 1px solid black; padding: 5px;">{{error}}</p>{% endif %}
 <form class="prettyform" action="" method="POST">
-    <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-    <input type="hidden" name="return_url" value="{{return_url}}" />
-Your Username : <input type="text" name="username" /> <input class="button" type="submit" value="Send Reminder" />
+<input type="hidden" name="csrf_token" value="{{csrf_token}}" /><input type="hidden" name="return_url" value="{{return_url}}" />
+{% trans "Your username" %}: <input type="text" name="username" /> <input class="button" type="submit" value="{% trans 'Send reminder' %}" />
 </form>
 {% endblock %}

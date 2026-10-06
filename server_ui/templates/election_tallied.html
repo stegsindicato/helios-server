@@ -3,7 +3,7 @@
 
 {% block content %}
 
-  <h2 class="title">{% blocktrans with election_name=election.name %}Election {{ election_name }} Already Tallied{% endblocktrans %}</h2>
+  <h2 class="title">{% blocktrans with election_name=election.name %}Tally already computed for {{ election_name }}{% endblocktrans %}</h2>
 
   <p>
       {% trans "This election has already been tallied (or at least the tally has begun), so you can no longer cast a vote." %}

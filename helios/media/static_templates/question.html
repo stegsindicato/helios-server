@@ -4,9 +4,9 @@
     <h4 class="question-title">
       {#if $T.admin_p}
       <span class="question-actions">
-        {#if $T.question$index > 0}[<a href="javascript:question_move_up({$T.question$index});">↑</a>]{#/if}
-        [<a href="javascript:question_edit({$T.question$index})">edit</a>]
-        [<a href="javascript:question_remove({$T.question$index})" onclick="return confirm('Are you sure you want to remove this question?');">×</a>]
+        {#if $T.question$index > 0}[<a href="javascript:question_move_up({$T.question$index});" title="{$T.i18n.move_up}">↑</a>]{#/if}
+        [<a href="javascript:question_edit({$T.question$index})">{$T.i18n.edit}</a>]
+        [<a href="javascript:question_remove({$T.question$index})" onclick="return question_remove_confirm();" title="{$T.i18n.remove}">×</a>]
       </span>
       {#/if}
       <span class="question-number">{$T.question$index + 1}.</span> {$T.question.question}
@@ -15,14 +15,14 @@
   
   <div class="question-meta">
     <span class="meta-item">
-      <span class="meta-label">Selection:</span> {$T.question.min} to {#if $T.question.max != null}{$T.question.max}{#else}unlimited{#/if}
+      <span class="meta-label">{$T.i18n.selection}:</span> {$T.question.min} {$T.i18n.to} {#if $T.question.max != null}{$T.question.max}{#else}{$T.i18n.unlimited}{#/if}
     </span>
     <span class="meta-item">
-      <span class="meta-label">Result type:</span> {$T.question.result_type}
+      <span class="meta-label">{$T.i18n.result_type}:</span> {#if $T.question.result_type == "relative"}{$T.i18n.relative}{#else}{$T.i18n.absolute}{#/if}
     </span>
     {#if $T.question.randomize_answer_order}
     <span class="meta-item">
-      <span class="meta-label">Order:</span> randomized
+      <span class="meta-label">{$T.i18n.order}:</span> {$T.i18n.randomized}
     </span>
     {#/if}
   </div>
@@ -32,7 +32,7 @@
     <li class="answer-item">
       <span class="answer-text">{$T.answer}</span>
       {#if $T.question.answer_urls[$T.answer$index]}
-        <a class="answer-link" target="_blank" href="{$T.question.answer_urls[$T.answer$index]}" title="More information">
+        <a class="answer-link" target="_blank" href="{$T.question.answer_urls[$T.answer$index]}" title="{$T.i18n.more_information}">
           <span class="link-icon">🔗</span>
         </a>
       {#/if}
@@ -44,25 +44,25 @@
 <div id="q_edit_{$T.question$index}" class="question-edit-card" style="display:none;">
   <form id="question_edit_{$T.question$index}_form" onsubmit="question_update({$T.question$index}, this); return false;" action="#">
     <div class="form-header">
-      <h4 class="edit-title">Edit Question {$T.question$index + 1}</h4>
+      <h4 class="edit-title">{$T.i18n.edit_question} {$T.question$index + 1}</h4>
     </div>
     
     <input type="hidden" name="choice_type" value="approval" />
     
     <div class="form-group">
-      <label class="form-label">Question Text</label>
-      <input type="text" name="question" class="form-control question-input" placeholder="Enter your question here" />
+      <label class="form-label">{$T.i18n.question_text}</label>
+      <input type="text" name="question" class="form-control question-input" placeholder="{$T.i18n.enter_question}" />
     </div>
     
     <div class="form-row-compact">
-      <span class="form-label-inline">Select between</span>
+      <span class="form-label-inline">{$T.i18n.select_between}</span>
       <select name="min" class="form-control-inline">
         <option selected>0</option>
         {#for option_index = 1 to 20}
         <option>{$T.option_index}</option>
         {#/for}
       </select>
-      <span class="form-label-inline">and</span>
+      <span class="form-label-inline">{$T.i18n.and}</span>
       <select name="max" class="form-control-inline">
         <option>0</option>
         <option selected>1</option>
@@ -71,61 +71,61 @@
         {#/for}
         <option value="">∞</option>
       </select>
-      <span class="form-label-inline">answers.</span>
-      <span class="form-label-inline" style="margin-left: 15px;">Result type:</span>
+      <span class="form-label-inline">{$T.i18n.answers}.</span>
+      <span class="form-label-inline" style="margin-left: 15px;">{$T.i18n.result_type}:</span>
       <select name="result_type" class="form-control-inline">
-        <option selected>absolute</option>
-        <option>relative</option>
+        <option selected value="absolute">{$T.i18n.absolute}</option>
+        <option value="relative">{$T.i18n.relative}</option>
       </select>
-      <span class="form-label-inline" style="margin-left: 15px;">Random order:</span>
+      <span class="form-label-inline" style="margin-left: 15px;">{$T.i18n.random_order}:</span>
       <select name="randomize_answer_order" class="form-control-inline">
-        <option selected value="0">No</option>
-        <option value="1">Yes</option>
+        <option selected value="0">{$T.i18n.no}</option>
+        <option value="1">{$T.i18n.yes}</option>
       </select>
     </div>
     
     <div class="answers-section">
-      <h5 class="section-title">Answer Options</h5>
+      <h5 class="section-title">{$T.i18n.answer_options}</h5>
       <div id="answer_table_{$T.question$index}" class="answers-container">
         <!-- Answers will be dynamically added here -->
       </div>
       <button type="button" class="btn-secondary" onclick="add_answers($('#answer_table_{$T.question$index}'), 5)">
-        + Add 5 More Answers
+        {$T.i18n.add_5_answers}
       </button>
     </div>
     
     <div class="form-actions">
-      <button type="submit" class="btn-primary">Update Question</button>
-      <button type="button" class="btn-secondary" onclick="question_edit_cancel({$T.question$index});">Cancel</button>
+      <button type="submit" class="btn-primary">{$T.i18n.update_question}</button>
+      <button type="button" class="btn-secondary" onclick="question_edit_cancel({$T.question$index});">{$T.i18n.cancel}</button>
     </div>
   </form>
 </div>
 {#else}
 <div class="no-questions">
-  <p>No questions have been added yet.</p>
+  <p>{$T.i18n.no_questions}</p>
 </div>
 {#/for}
 
 {#if $T.admin_p}
 <div class="add-question-section">
-  <h4 class="section-header">Add a New Question</h4>
+  <h4 class="section-header">{$T.i18n.add_new_question}</h4>
   <form id="question_form" class="question-form" onsubmit="question_add(this); return false;" action="#">
     <input type="hidden" name="choice_type" value="approval" />
     
     <div class="form-group">
-      <label class="form-label">Question Text</label>
-      <input type="text" name="question" class="form-control question-input" placeholder="Enter your question here" required />
+      <label class="form-label">{$T.i18n.question_text}</label>
+      <input type="text" name="question" class="form-control question-input" placeholder="{$T.i18n.enter_question}" required />
     </div>
     
     <div class="form-row-compact">
-      <span class="form-label-inline">Select between</span>
+      <span class="form-label-inline">{$T.i18n.select_between}</span>
       <select name="min" class="form-control-inline">
         <option selected>0</option>
         {#for option_index = 1 to 20}
         <option>{$T.option_index}</option>
         {#/for}
       </select>
-      <span class="form-label-inline">and</span>
+      <span class="form-label-inline">{$T.i18n.and}</span>
       <select name="max" class="form-control-inline">
         <option>0</option>
         <option selected>1</option>
@@ -134,31 +134,31 @@
         {#/for}
         <option value="">∞</option>
       </select>
-      <span class="form-label-inline">answers.</span>
-      <span class="form-label-inline" style="margin-left: 15px;">Result type:</span>
+      <span class="form-label-inline">{$T.i18n.answers}.</span>
+      <span class="form-label-inline" style="margin-left: 15px;">{$T.i18n.result_type}:</span>
       <select name="result_type" class="form-control-inline">
-        <option selected>absolute</option>
-        <option>relative</option>
+        <option selected value="absolute">{$T.i18n.absolute}</option>
+        <option value="relative">{$T.i18n.relative}</option>
       </select>
-      <span class="form-label-inline" style="margin-left: 15px;">Random order:</span>
+      <span class="form-label-inline" style="margin-left: 15px;">{$T.i18n.random_order}:</span>
       <select name="randomize_answer_order" class="form-control-inline">
-        <option selected value="0">No</option>
-        <option value="1">Yes</option>
+        <option selected value="0">{$T.i18n.no}</option>
+        <option value="1">{$T.i18n.yes}</option>
       </select>
     </div>
     
     <div class="answers-section">
-      <h5 class="section-title">Answer Options</h5>
+      <h5 class="section-title">{$T.i18n.answer_options}</h5>
       <div id="answer_table" class="answers-container">
         <!-- Answers will be dynamically added here -->
       </div>
       <button type="button" class="btn-secondary" onclick="add_answers($('#answer_table'), 5)">
-        + Add 5 More Answers
+        {$T.i18n.add_5_answers}
       </button>
     </div>
     
     <div class="form-actions">
-      <button type="submit" class="btn-primary">Add Question</button>
+      <button type="submit" class="btn-primary">{$T.i18n.add_question}</button>
     </div>
   </form>
 </div>

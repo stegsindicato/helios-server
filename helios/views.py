@@ -169,7 +169,7 @@ def trustee_keygenerator(request, election, trustee):
 @login_required
 def elections_administered(request):
   if not can_create_election(request):
-    return HttpResponseForbidden('only an administrator has elections to administer')
+    return HttpResponseForbidden(gettext('Only an administrator has elections to administer.'))
   
   user = get_user(request)
   elections = Election.get_by_user_as_admin(user)
@@ -187,7 +187,7 @@ def elections_voted(request):
 @login_required
 def election_new(request):
   if not can_create_election(request):
-    return HttpResponseForbidden('only an administrator can create an election')
+    return HttpResponseForbidden(gettext('Only an administrator can create an election.'))
     
   error = None
   
@@ -219,9 +219,9 @@ def election_new(request):
           election.generate_trustee(ELGAMAL_PARAMS)
           return HttpResponseRedirect(settings.SECURE_URL_HOST + reverse(url_names.election.ELECTION_VIEW, args=[election.uuid]))
         except IntegrityError:
-          error = "An election with short name %s already exists" % election_params['short_name']
+          error = gettext("An election with short name %(short_name)s already exists.") % {"short_name": election_params['short_name']}
       else:
-        error = "No special characters allowed in the short name."
+        error = gettext("No special characters are allowed in the short name.")
     
   return render_template(request, "election_new", {'election_form': election_form, 'error': error})
   
@@ -252,7 +252,7 @@ def one_election_edit(request, election):
         election.save()
         return HttpResponseRedirect(settings.SECURE_URL_HOST + reverse(url_names.election.ELECTION_VIEW, args=[election.uuid]))
       except IntegrityError:
-        error = "An election with short name %s already exists" % clean_data['short_name']
+        error = gettext("An election with short name %(short_name)s already exists.") % {"short_name": clean_data['short_name']}
 
   return render_template(request, "election_edit", {'election_form' : election_form, 'election' : election, 'error': error})
 
@@ -337,13 +337,13 @@ def one_election_view(request, election):
   # status update message?
   if election.openreg:
     if election.voting_has_started:
-      status_update_message = "Vote in %s" % election.name
+      status_update_message = gettext("Vote in %(election_name)s") % {"election_name": election.name}
     else:
-      status_update_message = "Register to vote in %s" % election.name
+      status_update_message = gettext("Register to vote in %(election_name)s") % {"election_name": election.name}
 
   # result!
   if election.result:
-    status_update_message = "Results are in for %s" % election.name
+    status_update_message = gettext("Results are in for %(election_name)s") % {"election_name": election.name}
   
   trustees = Trustee.get_by_election(election)
 
@@ -464,7 +464,7 @@ def election_admin_add(request, election):
     if not email:
       return render_template(request, 'election_admin_add', {
         'election': election,
-        'error': 'Please enter an email address.'
+        'error': gettext('Please enter an email address.')
       })
 
     # Check if a specific auth type was selected (when multiple users have same email)
@@ -473,7 +473,7 @@ def election_admin_add(request, election):
       try:
         new_admin = User.objects.get(user_id=email, user_type=selected_auth_type)
       except User.DoesNotExist:
-        raise Http404("User not found")
+        raise Http404(gettext("User not found"))
     else:
       # Find users by email - they must have logged in to Helios at least once
       # Note: same email can exist across multiple auth systems (google, facebook, etc.)
@@ -482,7 +482,7 @@ def election_admin_add(request, election):
       if not matching_users:
         return render_template(request, 'election_admin_add', {
           'election': election,
-          'error': 'No user found with that email. They must log in to Helios at least once before being added as an administrator.'
+          'error': gettext('No user found with that email. They must log in to Helios at least once before being added as an administrator.')
         })
 
       if len(matching_users) > 1:
@@ -499,19 +499,19 @@ def election_admin_add(request, election):
     if new_admin == election.admin:
       return render_template(request, 'election_admin_add', {
         'election': election,
-        'error': 'This user is already the election creator.'
+        'error': gettext('This user is already the election creator.')
       })
 
     # Check if already an admin
     if election.admins.filter(pk=new_admin.pk).exists():
       return render_template(request, 'election_admin_add', {
         'election': election,
-        'error': 'This user is already an administrator.'
+        'error': gettext('This user is already an administrator.')
       })
 
     # Add the new admin
     election.admins.add(new_admin)
-    election.append_log("Administrator %s (%s) added" % (new_admin.user_id, new_admin.user_type))
+    election.append_log(gettext("Administrator %(user_id)s (%(user_type)s) added") % {"user_id": new_admin.user_id, "user_type": new_admin.user_type})
 
     return HttpResponseRedirect(settings.SECURE_URL_HOST + reverse(url_names.election.ELECTION_ADMINS_LIST, args=[election.uuid]))
 
@@ -527,24 +527,24 @@ def election_admin_remove(request, election):
   current_user = get_user(request)
 
   if not user_email or not user_type:
-    raise Http404("No user specified")
+    raise Http404(gettext("No user specified"))
 
   try:
     admin_to_remove = User.objects.get(user_id=user_email, user_type=user_type)
   except User.DoesNotExist:
-    raise Http404("User not found")
+    raise Http404(gettext("User not found"))
 
   # Cannot remove the original creator
   if admin_to_remove == election.admin:
-    return HttpResponseForbidden("Cannot remove the election creator.")
+    return HttpResponseForbidden(gettext("Cannot remove the election creator."))
 
   # Cannot remove yourself
   if admin_to_remove == current_user:
-    return HttpResponseForbidden("You cannot remove yourself as an administrator.")
+    return HttpResponseForbidden(gettext("You cannot remove yourself as an administrator."))
 
   # Check if this user is actually an admin
   if not election.admins.filter(pk=admin_to_remove.pk).exists():
-    raise Http404("User is not an administrator of this election")
+    raise Http404(gettext("User is not an administrator of this election"))
 
   if request.method == "GET":
     return render_template(request, 'election_admin_remove', {
@@ -554,7 +554,7 @@ def election_admin_remove(request, election):
   else:
     check_csrf(request)
     election.admins.remove(admin_to_remove)
-    election.append_log("Administrator %s (%s) removed" % (admin_to_remove.user_id, admin_to_remove.user_type))
+    election.append_log(gettext("Administrator %(user_id)s (%(user_type)s) removed") % {"user_id": admin_to_remove.user_id, "user_type": admin_to_remove.user_type})
 
     return HttpResponseRedirect(settings.SECURE_URL_HOST + reverse(url_names.election.ELECTION_ADMINS_LIST, args=[election.uuid]))
 
@@ -568,8 +568,8 @@ def trustee_login(request, election_short_name, trustee_email, trustee_secret):
         set_logged_in_trustee(request, trustee)
         return HttpResponseRedirect(settings.SECURE_URL_HOST + reverse(url_names.election.ELECTION_TRUSTEE_HOME, args=[election.uuid, trustee.uuid]))
     # bad secret or no such trustee
-    raise Http404("Trustee not recognized.")
-  raise Http404("No election {} found.".format(election_short_name))
+    raise Http404(gettext("Trustee not recognized."))
+  raise Http404(gettext("No election %(short_name)s found.") % {"short_name": election_short_name})
 
 @election_admin()
 def trustee_send_url(request, election, trustee_uuid):
@@ -761,7 +761,7 @@ def password_voter_resend(request, election):
   if not VOTERS_EMAIL:
     return render_template(request, 'password_voter_resend', {
       'election': election,
-      'error': 'Email sending is not enabled on this server.'
+      'error': gettext('Email sending is not enabled on this server.')
     })
 
   can_send, reason = election.can_send_voter_emails()
@@ -786,7 +786,7 @@ def password_voter_resend(request, election):
     return render_template(request, 'password_voter_resend', {
       'election': election,
       'resend_form': resend_form,
-      'error': 'Please enter a valid voter ID.'
+      'error': gettext('Please enter a valid voter ID.')
     })
 
   voter_id = resend_form.cleaned_data['voter_id'].strip()
@@ -880,8 +880,8 @@ def one_election_cast_confirm(request, election):
 
     # status update this vote
     if voter and voter.can_update_status():
-      status_update_label = voter.user.update_status_template() % "your ballot tracker"
-      status_update_message = "I voted in %s - my ballot tracker is %s.. #heliosvoting" % (get_election_url(election),cast_vote.vote_hash[:10])
+      status_update_label = voter.user.update_status_template() % gettext("your ballot tracker")
+      status_update_message = gettext("I voted in %(election_url)s — my ballot tracker is %(tracker)s. #heliosvoting") % {"election_url": get_election_url(election), "tracker": cast_vote.vote_hash[:10]}
     else:
       status_update_label = None
       status_update_message = None
@@ -1102,11 +1102,11 @@ def voter_delete(request, election, voter_uuid):
       voter.send_message(subject, body)
 
       # log it
-      election.append_log("Voter %s/%s and their vote were removed after election was frozen" % (voter.voter_type,voter.voter_id))
+      election.append_log(gettext("Voter %(voter_type)s/%(voter_id)s and their vote were removed after the election was frozen") % {"voter_type": voter.voter_type, "voter_id": voter.voter_id})
 
     elif election.frozen_at:
       # log it
-      election.append_log("Voter %s/%s removed after election was frozen" % (voter.voter_type,voter.voter_id))
+      election.append_log(gettext("Voter %(voter_type)s/%(voter_id)s removed after the election was frozen") % {"voter_type": voter.voter_type, "voter_id": voter.voter_id})
 
     voter.delete()
           
@@ -1128,7 +1128,7 @@ def voters_clear(request, election):
     Voter.objects.filter(election=election).delete()
 
     # Log the action
-    election.append_log("All voters cleared (%d voters removed)" % num_voters)
+    election.append_log(gettext("All voters cleared (%(count)s voters removed)") % {"count": num_voters})
 
   return HttpResponseRedirect(settings.SECURE_URL_HOST + reverse(voters_list_pretty, args=[election.uuid]))
 
@@ -1254,7 +1254,7 @@ def _register_voter(election, user):
 @election_view()
 def one_election_register(request, election):
   if not election.openreg:
-    return HttpResponseForbidden('registration is closed for this election')
+    return HttpResponseForbidden(gettext('Registration is closed for this election.'))
     
   check_csrf(request)
     
@@ -1554,17 +1554,17 @@ def voters_download_csv(request, election):
   # Write headers based on what's visible to the user
   headers = []
   if admin_p:
-    headers.extend(['Login', 'Email Address'])
+    headers.extend([gettext('Login'), gettext('Email address')])
   
   if admin_p or not election.use_voter_aliases:
-    headers.append('Name')
-    headers.append('Voter Type')
+    headers.append(gettext('Name'))
+    headers.append(gettext('Voter type'))
   
   if election.use_voter_aliases:
-    headers.append('Alias')
+    headers.append(gettext('Alias'))
   
-  headers.append('Smart Ballot Tracker')
-  headers.append('Vote Cast At')
+  headers.append(gettext('Smart Ballot Tracker'))
+  headers.append(gettext('Vote cast at'))
   
   writer.writerow(headers)
   
@@ -1609,7 +1609,7 @@ def election_log_download_csv(request, election):
   writer = csv.writer(response)
 
   # Write header row
-  writer.writerow(['Timestamp', 'Event'])
+  writer.writerow([gettext('Timestamp'), gettext('Event')])
 
   # Write log entries
   for log in logs:
@@ -1696,14 +1696,14 @@ def voters_upload(request, election):
         try:
           voters = [v for v in voter_file_obj.itervoters()][:5]
           if len(voters) == 0:
-            raise Exception("no valid lines found in voter file")
+            raise Exception(gettext("No valid lines were found in the voter file."))
         except Exception as e:
           voters = []
-          problems.append("your CSV file could not be processed because %s" % str(e))
+          problems.append(gettext("Your CSV file could not be processed because %(error)s") % {"error": str(e)})
 
         return render_template(request, 'voters_upload_confirm', {'election': election, 'voters': voters, 'problems': problems})
       else:
-        return HttpResponseRedirect("%s?%s" % (settings.SECURE_URL_HOST + reverse(voters_upload, args=[election.uuid]), urlencode({'e':'no voter file specified, try again'})))
+        return HttpResponseRedirect("%s?%s" % (settings.SECURE_URL_HOST + reverse(voters_upload, args=[election.uuid]), urlencode({'e': gettext('No voter file was specified. Please try again.')})))
 
 @election_admin()
 def voters_upload_cancel(request, election):
@@ -1731,22 +1731,22 @@ def voters_email(request, election):
     return HttpResponseRedirect(settings.SECURE_URL_HOST + reverse(url_names.election.ELECTION_VIEW, args=[election.uuid]))
 
   TEMPLATES = [
-    ('vote', 'Time to Vote'),
-    ('simple', 'Simple'),
-    ('info', 'Additional Info'),
-    ('result', 'Election Result')
+    ('vote', gettext('Time to vote')),
+    ('simple', gettext('Simple')),
+    ('info', gettext('Additional information')),
+    ('result', gettext('Election result'))
     ]
 
   template = request.GET.get('template', 'vote')
   if not template in [t[0] for t in TEMPLATES]:
-    raise Exception("bad template")
+    raise Exception(gettext("Invalid email template"))
 
   voter_id = request.GET.get('voter_id', None)
 
   if voter_id:
     voter = Voter.get_by_election_and_voter_id(election, voter_id)
     if not voter:
-      raise Exception("Voter not found")
+      raise Exception(gettext("Voter not found"))
   else:
     voter = None
   

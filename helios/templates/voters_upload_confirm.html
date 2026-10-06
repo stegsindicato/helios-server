@@ -1,47 +1,15 @@
 {% extends TEMPLATE_BASE %}
-
+{% load i18n %}
 {% block content %}
-  <h2 class="title">{{election.name}} &mdash; Bulk Upload Voters &mdash; Confirm<span style="font-size:0.7em;">[<a href="{% url "election@view" election.uuid %}">back to election</a>]</span></h2>
-
-<p>
-You have uploaded a file of voters. The first few rows of this file are:
-</p>
-
-<table>
-<tr><th>Voter Type</th><th>Voter Login</th><th>Email Address</th><th>Name</th></tr>
-{% for v in voters %}
-<tr><td>{{v.voter_type}}</td><td>{{v.voter_id}}</td><td>{{v.email}}</td><td>{{v.name}}</td></tr>
-{% endfor %}
-</table>
-
+<h2 class="title">{% blocktrans with election_name=election.name %}{{ election_name }} &mdash; Bulk upload voters &mdash; Confirm{% endblocktrans %} <span style="font-size:0.7em;">[<a href="{% url "election@view" election.uuid %}">{% trans "Back to election" %}</a>]</span></h2>
+<p>{% trans "You uploaded a voter file. The first few rows are:" %}</p>
+<table><tr><th>{% trans "Voter type" %}</th><th>{% trans "Voter login" %}</th><th>{% trans "Email address" %}</th><th>{% trans "Name" %}</th></tr>
+{% for v in voters %}<tr><td>{{v.voter_type}}</td><td>{{v.voter_id}}</td><td>{{v.email}}</td><td>{{v.name}}</td></tr>{% endfor %}</table>
 {% if problems %}
-<p style="font-size: 1.5em;">
-HOLD ON:<br />
-{% for problem in problems %}
-- {{problem}}<br />
-{% endfor %}
-</p>
-<br />
-
-<form class="inline-action" method="post" action="{% url "election@voters@upload-cancel" election.uuid %}">
-<input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-<button type="submit" class="link-button">never mind, upload a different file</button>
-</form>
-
+<p style="font-size: 1.5em;"><strong>{% trans "Please review these problems:" %}</strong><br />{% for problem in problems %}- {{problem}}<br />{% endfor %}</p><br />
+<form class="inline-action" method="post" action="{% url "election@voters@upload-cancel" election.uuid %}"><input type="hidden" name="csrf_token" value="{{csrf_token}}" /><button type="submit" class="link-button">{% trans "Upload a different file" %}</button></form>
 {% else %}
-<p></p>
-<form method="post" action="" id="upload_form">
-  Does this look right to you?
-  <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-  <input type="hidden" name="confirm_p" value="1" />
-  <input class="button" type="submit" value="Yes, let's go" />
-</form>
-
-<form class="inline-action" method="post" action="{% url "election@voters@upload-cancel" election.uuid %}">
-<input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-<button type="submit" class="link-button">no, let me upload a different file</button>
-</form>
-
+<form method="post" action="" id="upload_form">{% trans "Does this look correct?" %}<input type="hidden" name="csrf_token" value="{{csrf_token}}" /><input type="hidden" name="confirm_p" value="1" /><input class="button" type="submit" value="{% trans 'Yes, continue' %}" /></form>
+<form class="inline-action" method="post" action="{% url "election@voters@upload-cancel" election.uuid %}"><input type="hidden" name="csrf_token" value="{{csrf_token}}" /><button type="submit" class="link-button">{% trans "No, upload a different file" %}</button></form>
 {% endif %}
-
 {% endblock %}

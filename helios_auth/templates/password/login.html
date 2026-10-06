@@ -1,27 +1,13 @@
 {% extends TEMPLATE_BASE %}
+{% load i18n %}
 
-{% block header %}
-<h2>{{ settings.SITE_TITLE }} &mdash; Login</h2>
-{% endblock %}
-
+{% block header %}<h2>{% blocktrans with site_title=settings.SITE_TITLE %}{{ site_title }} &mdash; Login{% endblocktrans %}</h2>{% endblock %}
 
 {% block content %}
-
-{% if error %}
-<p style="border: 1px solid black; padding: 5px;">
-    {{error}}
-</p>
-{% endif %}
-
-<p>
+{% if error %}<p style="border: 1px solid black; padding: 5px;">{{error}}</p>{% endif %}
 <form class="prettyform" action="" method="POST" id="login_form">
-    <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-<table>
-    {{form.as_table}}
-</table>
-<div>
-<label for="">&nbsp;</label><input class="button" type="submit" value="Login" />
-</div>
+  <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
+  <table>{{form.as_table}}</table>
+  <div><label for="">&nbsp;</label><input class="button" type="submit" value="{% trans 'Log in' %}" /></div>
 </form>
-</p>
 {% endblock %}
