@@ -105,8 +105,15 @@ services:
       # Posteriormente añadiremos OTP @edu.xunta.gal.
       # --------------------------------------------------------
 
-      AUTH_ENABLED_SYSTEMS: password
+      AUTH_ENABLED_SYSTEMS: password,edu_email
       AUTH_DEFAULT_SYSTEM: password
+
+      EDU_EMAIL_DOMAIN: edu.xunta.gal
+      EDU_EMAIL_OTP_MAX_AGE: "1800"
+      EDU_EMAIL_OTP_MAX_ATTEMPTS: "5"
+      EDU_EMAIL_OTP_RESEND_SECONDS: "60"
+
+      STORE_CAST_IP: "0"
 
 
       # --------------------------------------------------------
