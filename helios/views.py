@@ -840,14 +840,14 @@ def one_election_cast_confirm(request, election):
   if voter:
     vote = datatypes.LDObject.fromDict(utils.from_json(encrypted_vote), type_hint='legacy/EncryptedVote').wrapped_obj
 
-    if 'HTTP_X_FORWARDED_FOR' in request.META:
-      # HTTP_X_FORWARDED_FOR sometimes have a comma delimited list of IP addresses
-      # Here we want the originating IP address
-      # See http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/x-forwarded-headers.html
-      # and https://en.wikipedia.org/wiki/X-Forwarded-For
-      cast_ip = request.META.get('HTTP_X_FORWARDED_FOR').split(',')[0].strip() or None
-    else:
-      cast_ip = request.META.get('REMOTE_ADDR', None)
+    cast_ip = None
+    if settings.STORE_CAST_IP:
+      if 'HTTP_X_FORWARDED_FOR' in request.META:
+        # HTTP_X_FORWARDED_FOR sometimes has a comma-delimited list of IPs.
+        # Here we want the originating IP address.
+        cast_ip = request.META.get('HTTP_X_FORWARDED_FOR').split(',')[0].strip() or None
+      else:
+        cast_ip = request.META.get('REMOTE_ADDR', None)
 
     # prepare the vote to cast
     cast_vote_params = {
@@ -1457,6 +1457,10 @@ def voters_list_pretty(request, election):
   user = get_user(request)
   admin_p = user_can_admin_election(user, election)
 
+  # Do not allow public searching by voter identity.
+  if not admin_p:
+    q = ''
+
   categories = None
   eligibility_category_id = None
 
@@ -1499,6 +1503,10 @@ def voters_list_pretty(request, election):
   # Check if voter modifications (uploads, deletions) are allowed
   can_modify_voters, modify_voters_disabled_reason = election.can_modify_voters()
 
+  edu_email_eligibility_p = (
+    election.openreg and election.eligibility == [{'auth_system': 'edu_email'}]
+  )
+
   return render_template(request, 'voters_list',
                          {'election': election, 'voters_page': voters_page,
                           'voters': voters_page.object_list, 'admin_p': admin_p,
@@ -1512,6 +1520,7 @@ def voters_list_pretty(request, election):
                           'q' : q,
                           'voter_files': voter_files,
                           'categories': categories,
+                          'edu_email_eligibility_p': edu_email_eligibility_p,
                           'eligibility_category_id' : eligibility_category_id})
 
 @election_view()
@@ -1524,6 +1533,10 @@ def voters_download_csv(request, election):
   
   user = get_user(request)
   admin_p = user_can_admin_election(user, election)
+
+  # Voter exports contain identifying information and are admin-only.
+  if not admin_p:
+    raise PermissionDenied()
   
   # Get all voters (no pagination for CSV export)
   order_by = 'alias' if election.use_voter_aliases else 'user__user_id'
@@ -1640,20 +1653,25 @@ def voters_eligibility(request, election):
   # eligibility
   eligibility = request.POST['eligibility']
 
-  if eligibility in ['openreg', 'limitedreg']:
-    election.openreg= True
-
-  if eligibility == 'closedreg':
-    election.openreg= False
-
-  if eligibility == 'limitedreg':
+  if eligibility == 'openreg':
+    election.openreg = True
+    election.eligibility = None
+  elif eligibility == 'closedreg':
+    election.openreg = False
+    election.eligibility = None
+  elif eligibility == 'edu_email':
+    if 'edu_email' not in settings.AUTH_ENABLED_SYSTEMS:
+      return HttpResponseBadRequest('edu_email authentication is not enabled')
+    election.openreg = True
+    election.eligibility = [{'auth_system': 'edu_email'}]
+  elif eligibility == 'limitedreg':
+    election.openreg = True
     # now process the constraint
     category_id = request.POST['category_id']
-
     constraint = AUTH_SYSTEMS[user.user_type].generate_constraint(category_id, user)
     election.eligibility = [{'auth_system': user.user_type, 'constraint': [constraint]}]
   else:
-    election.eligibility = None
+    return HttpResponseBadRequest('invalid eligibility mode')
 
   election.save()
   return HttpResponseRedirect(settings.SECURE_URL_HOST + reverse(voters_list_pretty, args=[election.uuid]))
@@ -1820,15 +1838,25 @@ def voters_email(request, election):
       'templates' : TEMPLATES})    
 
 # Individual Voters
+def _public_voter_dict(voter, admin_p=False):
+  """Serialize a voter without exposing their human-readable identity publicly."""
+  voter_dict = voter.ld_object.toDict()
+  if not admin_p:
+    voter_dict.pop('name', None)
+  return voter_dict
+
+
 @election_view()
 @return_json
 def voter_list(request, election):
   # normalize limit
   limit = int(request.GET.get('limit', 500))
   if limit > 500: limit = 500
-    
+
+  user = get_user(request)
+  admin_p = user_can_admin_election(user, election)
   voters = Voter.get_by_election(election, order_by='uuid', after=request.GET.get('after',None), limit= limit)
-  return [v.ld_object.toDict() for v in voters]
+  return [_public_voter_dict(voter, admin_p=admin_p) for voter in voters]
   
 @election_view()
 @return_json
@@ -1839,7 +1867,9 @@ def one_voter(request, election, voter_uuid):
   voter = Voter.get_by_election_and_uuid(election, voter_uuid)
   if not voter:
     raise Http404
-  return voter.toJSONDict()  
+  user = get_user(request)
+  admin_p = user_can_admin_election(user, election)
+  return _public_voter_dict(voter, admin_p=admin_p)
 
 @election_view()
 @return_json

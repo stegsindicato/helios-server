@@ -26,9 +26,12 @@
 <form method="post" action="{% url "election@voters@eligibility" election.uuid %}">
 <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
 <label><input type="radio" name="eligibility" value="openreg" {% if election.openreg and not election.eligibility %}CHECKED{% endif %} /> {% trans "Anyone can vote" %}</label><br />
+{% if "edu_email" in settings.AUTH_ENABLED_SYSTEMS %}
+<label><input type="radio" name="eligibility" value="edu_email" {% if edu_email_eligibility_p %}CHECKED{% endif %} /> {% blocktrans with domain=settings.EDU_EMAIL_DOMAIN %}Open registration only with verified @{{ domain }} email{% endblocktrans %}</label><br />
+{% endif %}
 <label><input type="radio" name="eligibility" value="closedreg" {% if not election.openreg %}CHECKED{% endif %} /> {% trans "Only voters explicitly listed below can vote" %}</label><br />
 {% if categories %}
-<label><input type="radio" name="eligibility" value="limitedreg" {% if election.eligibility %}CHECKED{% endif %} /> {% trans "Only voters who are members of" %}</label>
+<label><input type="radio" name="eligibility" value="limitedreg" {% if election.eligibility and not edu_email_eligibility_p %}CHECKED{% endif %} /> {% trans "Only voters who are members of" %}</label>
 <select name="category_id">
 {% for category in categories %}
 <option value="{{category.id}}" {% if eligibility_category_id == category.id %}SELECTED{% endif %}>{{category.name}}</option>
@@ -52,7 +55,7 @@
 </p>
 {% endif %}
 
-{% if election.num_voters > 20 %}
+{% if admin_p and election.num_voters > 20 %}
 {% if q %}
 <p>{% blocktrans with query=q %}<em>Searching for <u>{{ query }}</u>.</em>{% endblocktrans %} [<a href="?">{% trans "Clear search" %}</a>]</p>
 {% else %}
@@ -60,9 +63,11 @@
 {% endif %}
 {% endif %}
 
+{% if admin_p %}
 <p>
 <a class="button" href="{% url "election@voters@download-csv" election.uuid %}{% if q %}?q={{q|urlencode}}{% endif %}">{% trans "Download voters as CSV" %}</a>
 </p>
+{% endif %}
 
 {% if admin_p %}
 {% if upload_p and not election.openreg %}
@@ -129,12 +134,10 @@
 
 <table class="pretty">
 <tr>
-{% if admin_p or not election.use_voter_aliases %}
 {% if admin_p %}
 <th style="width: 80px;">{% trans "Actions" %}</th>
 <th>{% trans "Login" %}</th>
 <th>{% trans "Email address" %}</th>
-{% endif %}
 <th>{% trans "Name" %}</th>
 {% endif %}
 {% if election.use_voter_aliases %}<th>{% trans "Alias" %}</th>{% endif %}
@@ -142,7 +145,6 @@
 </tr>
 {% for voter in voters %}
 <tr>
-{% if admin_p or not election.use_voter_aliases %}
 {% if admin_p %}
 <td style="white-space: nowrap;">
 {% if election.frozen_at %}
@@ -152,8 +154,7 @@
 </td>
 <td>{{voter.voter_login_id}}</td>
 <td>{{voter.voter_email}}</td>
-{% endif %}
-<td><img class="small-logo" src="/static/auth/login-icons/{{voter.voter_type}}.png" alt="{{voter.voter_type}}" /> {{voter.name}}</td>
+<td>{% if voter.voter_type != "edu_email" %}<img class="small-logo" src="/static/auth/login-icons/{{voter.voter_type}}.png" alt="{{voter.voter_type}}" /> {% endif %}{{voter.name}}</td>
 {% endif %}
 {% if election.use_voter_aliases %}<td>{{voter.alias}}</td>{% endif %}
 <td><tt style="font-size: 1.4em;">{% if voter.vote_hash %}{{voter.vote_hash}}{% else %}&mdash;{% endif %}</tt></td>

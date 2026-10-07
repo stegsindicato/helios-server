@@ -5,12 +5,13 @@ Unit Tests for Auth Systems
 import unittest
 
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from . import models, views
-from .auth_systems import AUTH_SYSTEMS, password as password_views
+from .auth_systems import AUTH_SYSTEMS, password as password_views, edu_email
 from .utils import format_recipient
 
 
@@ -84,7 +85,10 @@ class UserModelTests(unittest.TestCase):
         """
         for auth_system, auth_system_module in AUTH_SYSTEMS.items():
             assert(hasattr(auth_system_module, 'can_create_election'))
-            assert(auth_system_module.can_create_election('foobar', {}))
+            if auth_system == 'edu_email':
+                self.assertFalse(auth_system_module.can_create_election('foobar', {}))
+            else:
+                self.assertTrue(auth_system_module.can_create_election('foobar', {}))
 
 
     def test_status_update(self):
@@ -117,6 +121,24 @@ class UserModelTests(unittest.TestCase):
             u2 = models.User.update_or_create(user_type = auth_system, user_id = 'foobar_eq', info={'name':'Foo Bar Status Update'})
 
             self.assertEqual(u, u2)
+
+
+class EduEmailAuthTests(unittest.TestCase):
+
+    @override_settings(EDU_EMAIL_DOMAIN='edu.xunta.gal')
+    def test_accepts_only_configured_domain(self):
+        self.assertEqual(
+            edu_email._normalize_email('Persoa@EDU.XUNTA.GAL'),
+            'persoa@edu.xunta.gal'
+        )
+        with self.assertRaises(ValidationError):
+            edu_email._normalize_email('persoa@example.org')
+
+    @override_settings(EDU_EMAIL_OTP_MAX_AGE=900)
+    def test_pending_code_expires(self):
+        pending = {'created_at': 1000}
+        self.assertFalse(edu_email._pending_expired(pending, now=1899))
+        self.assertTrue(edu_email._pending_expired(pending, now=1901))
 
 
 class GitHubUserTests(TestCase):

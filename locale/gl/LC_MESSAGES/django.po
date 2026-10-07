@@ -4087,3 +4087,102 @@ msgstr ""
 #~ msgid "OH OH, your key is bad."
 #~ msgstr "Vaia, a túa chave non é correcta."
 
+#: settings.py
+msgid "Voting access code"
+msgstr "Código de acceso á votación"
+
+#: helios_auth/auth_systems/edu_email.py
+msgid "Corporate email"
+msgstr "Correo corporativo"
+
+#: helios_auth/auth_systems/edu_email.py
+#, python-format
+msgid "Enter a valid @%(domain)s address."
+msgstr "Introduce un enderezo @%(domain)s válido."
+
+#: helios_auth/auth_systems/edu_email.py
+msgid "Enter the 6-digit code."
+msgstr "Introduce o código de 6 cifras."
+
+#: helios_auth/auth_systems/edu_email.py
+msgid "A code was sent recently. Check your email before requesting another one."
+msgstr "Xa se enviou un código recentemente. Revisa o correo antes de solicitar outro."
+
+#: helios_auth/auth_systems/edu_email.py
+#, python-format
+msgid ""
+"Hello,\n"
+"\n"
+"Your code to access the election is:\n"
+"\n"
+"%(code)s\n"
+"\n"
+"The code expires in %(minutes)d minutes.\n"
+"\n"
+"If you did not request this code, you can ignore this message.\n"
+"\n"
+"--\n"
+"%(site_title)s\n"
+msgstr ""
+"Ola,\n"
+"\n"
+"O teu código para acceder á votación é:\n"
+"\n"
+"%(code)s\n"
+"\n"
+"O código caduca en %(minutes)d minutos.\n"
+"\n"
+"Se non solicitaches este código, podes ignorar esta mensaxe.\n"
+"\n"
+"--\n"
+"%(site_title)s\n"
+
+#: helios_auth/auth_systems/edu_email.py
+msgid "We could not send the email. Please try again later."
+msgstr "Non foi posible enviar o correo. Proba de novo máis tarde."
+
+#: helios_auth/auth_systems/edu_email.py
+msgid "The code has expired. Request a new one."
+msgstr "O código caducou. Solicita un novo."
+
+#: helios_auth/auth_systems/edu_email.py
+msgid "The maximum number of attempts has been exceeded. Request a new code."
+msgstr "Superouse o número máximo de intentos. Solicita un novo código."
+
+#: helios_auth/auth_systems/edu_email.py
+msgid "Incorrect code."
+msgstr "Código incorrecto."
+
+#: helios_auth/templates/edu_email/login.html
+msgid "Identification to vote"
+msgstr "Identificación para votar"
+
+#: helios_auth/templates/edu_email/login.html
+#, python-format
+msgid "To participate, you need to prove that you have access to an <strong>@%(domain)s</strong> account."
+msgstr "Para participar, necesitas demostrar que tes acceso a unha conta <strong>@%(domain)s</strong>."
+
+#: helios_auth/templates/edu_email/login.html
+msgid "We will send a six-digit code to your email. Your identity is used to ensure one voter per person; it is not published or included in the ballot contents."
+msgstr "Enviaremos un código de seis cifras ao teu correo. A túa identidade úsase para garantir unha única persoa votante; non se publica nin se incorpora ao contido da papeleta."
+
+#: helios_auth/templates/edu_email/login.html
+msgid "Send code"
+msgstr "Enviar código"
+
+#: helios_auth/templates/edu_email/verify.html
+msgid "Enter the code you received"
+msgstr "Introduce o código recibido"
+
+#: helios_auth/templates/edu_email/verify.html
+#, python-format
+msgid "We sent a six-digit code to the <strong>@%(domain)s</strong> email address you provided. You can check your email on another device and enter the code here."
+msgstr "Enviamos un código de seis cifras ao enderezo <strong>@%(domain)s</strong> que indicaches. Podes consultar o correo noutro dispositivo e escribir aquí o código."
+
+#: helios_auth/templates/edu_email/verify.html
+msgid "Verify and continue"
+msgstr "Verificar e continuar"
+
+#: helios_auth/templates/edu_email/verify.html
+msgid "Request another code"
+msgstr "Solicitar outro código"

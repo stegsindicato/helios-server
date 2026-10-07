@@ -1,0 +1,29 @@
+{% extends TEMPLATE_BASE %}
+{% load i18n %}
+
+{% block content %}
+<h2>{% trans "Identification to vote" %}</h2>
+
+<p>
+{% blocktrans with domain=domain %}To participate, you need to prove that you have access to an <strong>@{{ domain }}</strong> account.{% endblocktrans %}
+</p>
+
+<p>
+{% blocktrans %}We will send a six-digit code to your email. Your identity is used to ensure one voter per person; it is not published or included in the ballot contents.{% endblocktrans %}
+</p>
+
+{% if error %}
+<p style="color: #b00020;"><strong>{{error}}</strong></p>
+{% endif %}
+
+<form method="post" action="{% url 'auth@edu_email@login' %}">
+  <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
+
+  <label for="id_email"><strong>{% trans "Corporate email" %}</strong></label>
+  {{form.email}}
+  {% if form.email.errors %}<div>{{form.email.errors}}</div>{% endif %}
+
+  <br />
+  <input class="button" type="submit" value="{% trans 'Send code' %}" />
+</form>
+{% endblock %}
