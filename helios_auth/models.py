@@ -177,6 +177,10 @@ class User(models.Model):
     else:
       name_display = self.pretty_name
 
+    # edu_email deliberately has no social-network icon.
+    if self.user_type == 'edu_email':
+      return name_display
+
     return """<img class="%s-logo" src="/static/auth/login-icons/%s.png" alt="%s" /> %s""" % (
       size, self.user_type, self.user_type, name_display)
 

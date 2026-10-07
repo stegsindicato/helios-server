@@ -50,21 +50,26 @@ def login_box_raw(request, return_url='/', auth_systems = None):
   """
   a chunk of HTML that shows the various login options
   """
-  default_auth_system_obj = None
-  if DEFAULT_AUTH_SYSTEM:
-    default_auth_system_obj = AUTH_SYSTEMS[DEFAULT_AUTH_SYSTEM]
-
   # make sure that auth_systems includes only available and enabled auth systems
   if auth_systems is not None:
     enabled_auth_systems = set(auth_systems).intersection(set(ENABLED_AUTH_SYSTEMS)).intersection(set(AUTH_SYSTEMS.keys()))
   else:
     enabled_auth_systems = set(ENABLED_AUTH_SYSTEMS).intersection(set(AUTH_SYSTEMS.keys()))
 
+  # Only use the configured default if it is actually allowed in this
+  # particular login box. This matters for elections restricted to edu_email.
+  effective_default_auth_system = None
+  default_auth_system_obj = None
+  if DEFAULT_AUTH_SYSTEM and DEFAULT_AUTH_SYSTEM in enabled_auth_systems:
+    effective_default_auth_system = DEFAULT_AUTH_SYSTEM
+    default_auth_system_obj = AUTH_SYSTEMS[DEFAULT_AUTH_SYSTEM]
+
   form = password.LoginForm()
 
   return render_template_raw(request, 'login_box', {
       'enabled_auth_systems': enabled_auth_systems, 'return_url': return_url,
-      'default_auth_system': DEFAULT_AUTH_SYSTEM, 'default_auth_system_obj': default_auth_system_obj,
+      'default_auth_system': effective_default_auth_system,
+      'default_auth_system_obj': default_auth_system_obj,
       'form' : form})
   
 def do_local_logout(request):

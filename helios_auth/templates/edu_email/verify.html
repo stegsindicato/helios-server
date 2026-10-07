@@ -1,0 +1,27 @@
+{% extends TEMPLATE_BASE %}
+{% load i18n %}
+
+{% block content %}
+<h2>{% trans "Enter the code you received" %}</h2>
+
+<p>
+{% blocktrans with domain=domain %}We sent a six-digit code to the <strong>@{{ domain }}</strong> email address you provided. You can check your email on another device and enter the code here.{% endblocktrans %}
+</p>
+
+{% if error %}
+<p style="color: #b00020;"><strong>{{error}}</strong></p>
+{% endif %}
+
+<form method="post" action="{% url 'auth@edu_email@verify' %}">
+  <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
+
+  <label for="id_code"><strong>{% trans "Code" %}</strong></label>
+  {{form.code}}
+  {% if form.code.errors %}<div>{{form.code.errors}}</div>{% endif %}
+
+  <br />
+  <input class="button" type="submit" value="{% trans 'Verify and continue' %}" />
+</form>
+
+<p><a href="{% url 'auth@edu_email@login' %}">{% trans "Request another code" %}</a></p>
+{% endblock %}

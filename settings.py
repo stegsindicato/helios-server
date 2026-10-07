@@ -7,6 +7,7 @@ import os
 
 import ldap
 from django_auth_ldap.config import LDAPSearch
+from django.utils.translation import gettext_noop
 
 TESTING = 'test' in sys.argv
 
@@ -295,6 +296,18 @@ if DEBUG:
     AUTH_ENABLED_SYSTEMS = ['devlogin'] + AUTH_ENABLED_SYSTEMS
 
 AUTH_DEFAULT_SYSTEM = get_from_env('AUTH_DEFAULT_SYSTEM', get_from_env('AUTH_DEFAULT_AUTH_SYSTEM', None))
+
+# Email OTP authentication for open-registration elections.
+# The backend only accepts addresses in EDU_EMAIL_DOMAIN and uses the normal
+# Django email backend configured below.
+EDU_EMAIL_DOMAIN = get_from_env('EDU_EMAIL_DOMAIN', 'edu.xunta.gal').lower().lstrip('@').rstrip('.')
+EDU_EMAIL_OTP_MAX_AGE = int(get_from_env('EDU_EMAIL_OTP_MAX_AGE', '900'))
+EDU_EMAIL_OTP_MAX_ATTEMPTS = int(get_from_env('EDU_EMAIL_OTP_MAX_ATTEMPTS', '5'))
+EDU_EMAIL_OTP_RESEND_SECONDS = int(get_from_env('EDU_EMAIL_OTP_RESEND_SECONDS', '60'))
+EDU_EMAIL_SUBJECT = get_from_env('EDU_EMAIL_SUBJECT', gettext_noop('Voting access code'))
+
+# Privacy: do not retain the source IP for cast votes unless explicitly enabled.
+STORE_CAST_IP = (get_from_env('STORE_CAST_IP', '0') == '1')
 
 # google
 GOOGLE_CLIENT_ID = get_from_env('GOOGLE_CLIENT_ID', '')

@@ -6,6 +6,9 @@
 {% if auth_system != "password" %}
 <p>
   <a href="{{SECURE_URL_HOST}}{% url "auth@start" system_name=auth_system %}?return_url={{return_url}}" style="font-size: 1.4em;">
+    {% if auth_system == "edu_email" %}
+    {% blocktrans with domain=settings.EDU_EMAIL_DOMAIN %}Verify corporate email @{{ domain }}{% endblocktrans %}
+    {% else %}
     <img style="height: 35px; border: 0px;" src="/static/auth/login-icons/{{auth_system}}.png" alt="{{auth_system}}" />
     {% if auth_system == "google" %}{% trans "Log in with Google" %}
     {% elif auth_system == "github" %}{% trans "Log in with GitHub" %}
@@ -17,6 +20,7 @@
     {% elif auth_system == "ldap" %}{% trans "Log in with LDAP" %}
     {% elif auth_system == "devlogin" %}{% trans "Development login" %}
     {% else %}{{auth_system}}{% endif %}
+    {% endif %}
   </a>
 </p>
 {% endif %}
