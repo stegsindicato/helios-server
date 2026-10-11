@@ -1,0 +1,29 @@
+{% extends TEMPLATE_BASE %}
+{% load i18n %}
+
+{% block content %}
+<h2>{% trans "Confirm your saved ballot" %}</h2>
+
+{% if error %}
+  <div class="alert-box alert">{{ error }}</div>
+  <p><a href="/">{% trans "Return to Helios" %}</a></p>
+{% else %}
+  <p>
+    {% blocktrans with election_name=election.name %}This link recovered the encrypted ballot you prepared for <strong>{{ election_name }}</strong>.{% endblocktrans %}
+  </p>
+
+  <p>
+    {% trans "Opening this page has not cast your vote. Check the ballot tracker below and press the button only if you want to submit this saved ballot." %}
+  </p>
+
+  <p>
+    <strong>{% trans "Smart Ballot Tracker" %}:</strong><br />
+    <code style="overflow-wrap:anywhere;">{{ vote_hash }}</code>
+  </p>
+
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+    <input class="button" type="submit" value="{% trans 'Cast this vote' %}" />
+  </form>
+{% endif %}
+{% endblock %}

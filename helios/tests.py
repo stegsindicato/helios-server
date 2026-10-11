@@ -882,6 +882,80 @@ class WebTest(django_webtest.WebTest):
 ## overall operation of the system
 ##
 
+class PendingEmailVoteLinkTests(TestCase):
+    fixtures = ['users.json', 'election.json']
+
+    def setUp(self):
+        self.election = models.Election.objects.all()[0]
+        self.election.openreg = True
+        self.election.eligibility = [{'auth_system': 'edu_email'}]
+        self.election.frozen_at = datetime.datetime.utcnow()
+        self.election.voting_starts_at = None
+        self.election.voting_started_at = None
+        self.election.voting_ends_at = None
+        self.election.voting_ended_at = None
+        self.election.encrypted_tally = None
+        self.election.result = None
+        self.election.save()
+
+        encrypted = homomorphic.EncryptedVote.fromElectionAndAnswers(
+            self.election, [[1]]
+        )
+        encrypted_dict = encrypted.ld_object.includeRandomness().toJSONDict()
+        ballot = datatypes.LDObject.fromDict(
+            encrypted_dict, type_hint='legacy/EncryptedVote'
+        )
+        self.encrypted_vote = ballot.serialize()
+        self.vote_hash = crypto_utils.hash_b64(self.encrypted_vote)
+        self.token = 'pending-email-vote-test-token'
+        self.pending = models.PendingEmailVote.objects.create(
+            election=self.election,
+            email='persoa@edu.xunta.gal',
+            encrypted_vote=self.encrypted_vote,
+            vote_hash=self.vote_hash,
+            token_digest=models.PendingEmailVote.digest_token(self.token),
+            expires_at=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+        )
+        self.url = '/helios/email-vote/%s' % self.token
+
+    def test_get_is_read_only(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(models.CastVote.objects.count(), 0)
+        self.pending.refresh_from_db()
+        self.assertIsNone(self.pending.used_at)
+
+    def test_post_authenticates_and_casts_once(self):
+        self.client.get(self.url)
+        csrf_token = self.client.session['csrf_token']
+        response = self.client.post(self.url, {'csrf_token': csrf_token})
+        self.assertEqual(response.status_code, 302)
+
+        self.pending.refresh_from_db()
+        self.assertIsNotNone(self.pending.used_at)
+        self.assertIsNotNone(self.pending.cast_vote_id)
+        self.assertEqual(self.pending.encrypted_vote, '')
+        self.assertEqual(models.CastVote.objects.count(), 1)
+
+        voter = models.Voter.objects.get(
+            election=self.election,
+            voter_login_id='persoa@edu.xunta.gal',
+        )
+        self.assertEqual(voter.user.user_type, 'edu_email')
+
+        # Reusing the same bearer link must not cast another vote.
+        response = self.client.post(self.url, {'csrf_token': csrf_token})
+        self.assertEqual(response.status_code, 410)
+        self.assertEqual(models.CastVote.objects.count(), 1)
+
+    def test_expired_link_does_not_cast(self):
+        self.pending.expires_at = datetime.datetime.utcnow() - datetime.timedelta(seconds=1)
+        self.pending.save(update_fields=['expires_at'])
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 410)
+        self.assertEqual(models.CastVote.objects.count(), 0)
+
+
 class ElectionBlackboxTests(WebTest):
     fixtures = ['users.json', 'election.json']
     allow_database_queries = True

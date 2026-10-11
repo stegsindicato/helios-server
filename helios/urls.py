@@ -9,6 +9,7 @@ urlpatterns = [
   path('testcookie_2', views.test_cookie_2, name=names.COOKIE_TEST_2),
   path('nocookies', views.nocookies, name=names.COOKIE_NO),
   path('stats/', include('helios.stats_urls')),
+  path('email-vote/<str:token>', views.pending_email_vote, name=names.PENDING_EMAIL_VOTE),
 
   # election shortcut by shortname
   path('e/<str:election_short_name>', views.election_shortcut, name=names.ELECTION_SHORTCUT),

@@ -4,10 +4,12 @@ Authentication by one-time code sent to an institutional email address.
 Intended for open-registration elections. Once authentication succeeds,
 Helios' normal openreg flow registers the authenticated User in the election.
 
-The OTP is stored only as an HMAC in the Django server-side session. No extra
-model or migration is required.
+The OTP is stored only as an HMAC in the Django server-side session. When a
+ballot is pending, an encrypted copy is stored temporarily so an emailed link
+can recover it even after the browser session is lost.
 """
 
+import datetime
 import secrets
 import time
 
@@ -142,6 +144,65 @@ def can_create_election(user_id, user_info):
   return False
 
 
+def _create_pending_vote_link(request, email):
+  """Create a server-side encrypted-ballot recovery link when voting."""
+  encrypted_vote = request.session.get('encrypted_vote')
+  if not encrypted_vote:
+    return None
+
+  try:
+    from helios import datatypes, utils
+    from helios.crypto import utils as cryptoutils
+    from helios.models import (
+      Election, PendingEmailVote, PENDING_EMAIL_VOTE_SESSION_KEY
+    )
+    from helios import url_names as helios_url_names
+
+    vote = datatypes.LDObject.fromDict(
+      utils.from_json(encrypted_vote), type_hint='legacy/EncryptedVote'
+    ).wrapped_obj
+    election = Election.get_by_uuid(vote.election_uuid)
+    if not election or not election.openreg:
+      return None
+
+    if election.eligibility:
+      allowed_systems = {item.get('auth_system') for item in election.eligibility}
+      if 'edu_email' not in allowed_systems:
+        return None
+
+    if (not election.voting_has_started()) or election.voting_has_stopped():
+      return None
+
+    now = datetime.datetime.utcnow()
+    # Superseded and expired links no longer need to retain the encrypted ballot.
+    PendingEmailVote.objects.filter(
+      expires_at__lt=now
+    ).exclude(encrypted_vote='').update(encrypted_vote='')
+    PendingEmailVote.objects.filter(
+      election=election,
+      email=email,
+      used_at__isnull=True,
+      invalidated_at__isnull=True,
+    ).update(invalidated_at=now, encrypted_vote='')
+
+    token = secrets.token_urlsafe(32)
+    pending = PendingEmailVote.objects.create(
+      election=election,
+      email=email,
+      encrypted_vote=encrypted_vote,
+      vote_hash=cryptoutils.hash_b64(encrypted_vote),
+      token_digest=PendingEmailVote.digest_token(token),
+      expires_at=now + datetime.timedelta(seconds=settings.EDU_EMAIL_LINK_MAX_AGE),
+    )
+    request.session[PENDING_EMAIL_VOTE_SESSION_KEY] = pending.id
+
+    path = reverse(helios_url_names.PENDING_EMAIL_VOTE, args=[token])
+    return settings.SECURE_URL_HOST + path
+  except Exception:
+    # OTP authentication must keep working even if link creation cannot.
+    return None
+
+
 def login_view(request):
   # Direct visits should also work, not only /auth/start/edu_email.
   request.session['auth_system_name'] = 'edu_email'
@@ -182,6 +243,7 @@ def login_view(request):
     'attempts': 0,
   }
 
+  continue_url = _create_pending_vote_link(request, email)
   minutes = max(1, settings.EDU_EMAIL_OTP_MAX_AGE // 60)
   body = gettext(
     "Hello,\n\n"
@@ -195,6 +257,19 @@ def login_view(request):
     'minutes': minutes,
     'site_title': settings.SITE_TITLE,
   }
+
+  if continue_url:
+    link_minutes = max(1, settings.EDU_EMAIL_LINK_MAX_AGE // 60)
+    body += gettext(
+      "\nIf you closed the voting page, you can recover your encrypted ballot using this link:\n"
+      "%(continue_url)s\n\n"
+      "Opening the link does not cast your vote. You will be asked to confirm it. "
+      "The link expires in %(minutes)d minutes and can only be used once. "
+      "Do not forward this link to anyone.\n"
+    ) % {
+      'continue_url': continue_url,
+      'minutes': link_minutes,
+    }
 
   try:
     send_mail(

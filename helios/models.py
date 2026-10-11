@@ -14,6 +14,7 @@ import uuid
 import bleach
 from django.conf import settings
 from django.db import models, transaction
+from django.utils.crypto import salted_hmac
 from django.utils.translation import gettext, gettext_lazy, ngettext
 from validate_email import validate_email
 
@@ -1249,6 +1250,54 @@ class CastVote(HeliosModel):
       issues.append("the vote's election UUID does not match the election for which this vote is being cast")
 
     return issues
+
+PENDING_EMAIL_VOTE_SESSION_KEY = 'edu_email_pending_vote_id'
+PENDING_EMAIL_VOTE_TOKEN_SALT = 'helios.pending-email-vote.v1'
+
+
+class PendingEmailVote(models.Model):
+  """
+  Temporarily stores an encrypted ballot while an edu_email voter waits for
+  email delivery. The bearer token itself is never stored, only an HMAC.
+  """
+  election = models.ForeignKey(Election, on_delete=models.CASCADE)
+  email = models.EmailField(max_length=254)
+  encrypted_vote = models.TextField()
+  vote_hash = models.CharField(max_length=100)
+  token_digest = models.CharField(max_length=64, unique=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  expires_at = models.DateTimeField()
+  used_at = models.DateTimeField(null=True, blank=True)
+  invalidated_at = models.DateTimeField(null=True, blank=True)
+  cast_vote = models.ForeignKey(
+    CastVote, null=True, blank=True, on_delete=models.SET_NULL,
+    related_name='pending_email_votes'
+  )
+
+  class Meta:
+    app_label = 'helios'
+    indexes = [
+      models.Index(fields=['election', 'email'], name='helios_pev_elec_email_idx'),
+      models.Index(fields=['expires_at'], name='helios_pev_expires_idx'),
+    ]
+
+  @staticmethod
+  def digest_token(token):
+    return salted_hmac(
+      PENDING_EMAIL_VOTE_TOKEN_SALT,
+      token,
+      secret=settings.SECRET_KEY,
+      algorithm='sha256',
+    ).hexdigest()
+
+  def is_active(self, now=None):
+    now = now or datetime.datetime.utcnow()
+    return (
+      self.used_at is None and
+      self.invalidated_at is None and
+      self.expires_at >= now
+    )
+
 
 class AuditedBallot(models.Model):
   """

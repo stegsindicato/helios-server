@@ -304,6 +304,7 @@ EDU_EMAIL_DOMAIN = get_from_env('EDU_EMAIL_DOMAIN', 'edu.xunta.gal').lower().lst
 EDU_EMAIL_OTP_MAX_AGE = int(get_from_env('EDU_EMAIL_OTP_MAX_AGE', '900'))
 EDU_EMAIL_OTP_MAX_ATTEMPTS = int(get_from_env('EDU_EMAIL_OTP_MAX_ATTEMPTS', '5'))
 EDU_EMAIL_OTP_RESEND_SECONDS = int(get_from_env('EDU_EMAIL_OTP_RESEND_SECONDS', '60'))
+EDU_EMAIL_LINK_MAX_AGE = int(get_from_env('EDU_EMAIL_LINK_MAX_AGE', '3600'))
 EDU_EMAIL_SUBJECT = get_from_env('EDU_EMAIL_SUBJECT', gettext_noop('Voting access code'))
 
 # Privacy: do not retain the source IP for cast votes unless explicitly enabled.

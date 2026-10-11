@@ -4186,3 +4186,63 @@ msgstr "Verificar e continuar"
 #: helios_auth/templates/edu_email/verify.html
 msgid "Request another code"
 msgstr "Solicitar outro código"
+
+#: helios/views.py
+msgid "This voting link is not valid."
+msgstr "Esta ligazón de votación non é válida."
+
+#: helios/views.py
+msgid "This voting link has expired or is no longer valid."
+msgstr "Esta ligazón de votación caducou ou xa non é válida."
+
+#: helios/views.py
+msgid "Voting is no longer open for this election."
+msgstr "A votación xa non está aberta para esta elección."
+
+#: helios/views.py
+msgid "This email address is not eligible to vote in this election."
+msgstr "Este enderezo de correo non está autorizado para votar nesta elección."
+
+#: helios/views.py
+msgid "The saved ballot cannot be cast for this election."
+msgstr "A papeleta gardada non se pode emitir nesta elección."
+
+#: helios/templates/pending_email_vote.html
+msgid "Confirm your saved ballot"
+msgstr "Confirma a túa papeleta gardada."
+
+#: helios/templates/pending_email_vote.html
+msgid "Return to Helios"
+msgstr "Volver a Helios"
+
+#: helios/templates/pending_email_vote.html
+#, python-format
+msgid "This link recovered the encrypted ballot you prepared for <strong>%(election_name)s</strong>."
+msgstr "Esta ligazón recuperou a papeleta cifrada que preparaches para <strong>%(election_name)s</strong>."
+
+#: helios/templates/pending_email_vote.html
+msgid "Opening this page has not cast your vote. Check the ballot tracker below and press the button only if you want to submit this saved ballot."
+msgstr "Abrir esta páxina non emitiu o teu voto. Comproba o identificador da papeleta e preme o botón só se queres enviar esta papeleta gardada."
+
+#: helios/templates/pending_email_vote.html
+msgid "Cast this vote"
+msgstr "Emitir este voto"
+
+#: helios_auth/auth_systems/edu_email.py
+#, python-format
+msgid ""
+"\n"
+"If you closed the voting page, you can recover your encrypted ballot using this link:\n"
+"%(continue_url)s\n"
+"\n"
+"Opening the link does not cast your vote. You will be asked to confirm it. "
+"The link expires in %(minutes)d minutes and can only be used once. "
+"Do not forward this link to anyone.\n"
+msgstr ""
+"\n"
+"Se pechaches a páxina de votación, podes recuperar a túa papeleta cifrada usando esta ligazón:\n"
+"%(continue_url)s\n"
+"\n"
+"Abrir a ligazón non emite o teu voto. Pedirémosche que o confirmes. "
+"A ligazón caduca en %(minutes)d minutos e só se pode usar unha vez. "
+"Non reenvíes esta ligazón a ninguén.\n"

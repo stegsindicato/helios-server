@@ -31,7 +31,8 @@ from . import forms
 from . import tasks
 from .crypto import algs, electionalgs, elgamal
 from .crypto import utils as cryptoutils
-from .models import User, Election, CastVote, Voter, VoterFile, Trustee, AuditedBallot
+from .models import (User, Election, CastVote, Voter, VoterFile, Trustee, AuditedBallot,
+                     PendingEmailVote, PENDING_EMAIL_VOTE_SESSION_KEY)
 from .security import (election_view, election_admin,
                        trustee_check, set_logged_in_trustee,
                        can_create_election, user_can_see_election, get_voter,
@@ -811,6 +812,179 @@ def password_voter_resend(request, election):
     'sent': True
   })
 
+def _build_cast_vote(request, election, voter, encrypted_vote):
+  """Build an unsaved CastVote using the same rules for every casting path."""
+  vote = datatypes.LDObject.fromDict(
+    utils.from_json(encrypted_vote), type_hint='legacy/EncryptedVote'
+  ).wrapped_obj
+
+  cast_ip = None
+  if settings.STORE_CAST_IP:
+    if 'HTTP_X_FORWARDED_FOR' in request.META:
+      cast_ip = request.META.get('HTTP_X_FORWARDED_FOR').split(',')[0].strip() or None
+    else:
+      cast_ip = request.META.get('REMOTE_ADDR', None)
+
+  return CastVote(
+    vote=vote,
+    voter=voter,
+    vote_hash=cryptoutils.hash_b64(encrypted_vote),
+    cast_at=datetime.datetime.utcnow(),
+    cast_ip=cast_ip,
+  )
+
+
+def _mark_session_pending_vote_used(request, election, cast_vote):
+  """Consume the recovery link when the OTP/browser flow casts its ballot."""
+  pending_id = request.session.pop(PENDING_EMAIL_VOTE_SESSION_KEY, None)
+  if not pending_id:
+    return
+
+  PendingEmailVote.objects.filter(
+    id=pending_id,
+    election=election,
+    vote_hash=cast_vote.vote_hash,
+    used_at__isnull=True,
+    invalidated_at__isnull=True,
+  ).update(
+    used_at=datetime.datetime.utcnow(), cast_vote=cast_vote, encrypted_vote=''
+  )
+
+
+def _pending_email_vote_response(request, pending=None, error=None, status=200):
+  response = render_template(request, 'pending_email_vote', {
+    'pending': pending,
+    'election': pending.election if pending else None,
+    'vote_hash': pending.vote_hash if pending else None,
+    'error': error,
+  })
+  response.status_code = status
+  response['Cache-Control'] = 'no-store'
+  response['Referrer-Policy'] = 'no-referrer'
+  response['X-Robots-Tag'] = 'noindex, nofollow'
+  return response
+
+
+@require_http_methods(["GET", "POST"])
+def pending_email_vote(request, token):
+  """
+  Resume and cast an encrypted ballot from an emailed recovery link.
+
+  GET is deliberately read-only because mail security scanners may open links.
+  The ballot is cast only after the voter explicitly submits the POST form.
+  """
+  token_digest = PendingEmailVote.digest_token(token)
+
+  try:
+    pending = PendingEmailVote.objects.select_related('election').get(
+      token_digest=token_digest
+    )
+  except PendingEmailVote.DoesNotExist:
+    return _pending_email_vote_response(
+      request, error=gettext('This voting link is not valid.'), status=404
+    )
+
+  if not pending.is_active():
+    return _pending_email_vote_response(
+      request, pending=pending,
+      error=gettext('This voting link has expired or is no longer valid.'),
+      status=410,
+    )
+
+  election = pending.election
+  if (not election.voting_has_started()) or election.voting_has_stopped() or election.encrypted_tally or election.result:
+    return _pending_email_vote_response(
+      request, pending=pending,
+      error=gettext('Voting is no longer open for this election.'),
+      status=410,
+    )
+
+  if request.method == 'GET':
+    return _pending_email_vote_response(request, pending=pending)
+
+  check_csrf(request)
+
+  with transaction.atomic():
+    try:
+      pending = PendingEmailVote.objects.select_for_update().select_related('election').get(
+        token_digest=token_digest
+      )
+    except PendingEmailVote.DoesNotExist:
+      return _pending_email_vote_response(
+        request, error=gettext('This voting link is not valid.'), status=404
+      )
+
+    if not pending.is_active():
+      return _pending_email_vote_response(
+        request, pending=pending,
+        error=gettext('This voting link has expired or is no longer valid.'),
+        status=410,
+      )
+
+    election = pending.election
+    if (not election.voting_has_started()) or election.voting_has_stopped() or election.encrypted_tally or election.result:
+      return _pending_email_vote_response(
+        request, pending=pending,
+        error=gettext('Voting is no longer open for this election.'),
+        status=410,
+      )
+
+    user_info = {'email': pending.email}
+    user = User.update_or_create(
+      'edu_email', pending.email, pending.email, user_info, None
+    )
+
+    voter = Voter.get_by_election_and_user(election, user)
+    if not voter and election.openreg:
+      try:
+        voter = _register_voter(election, user)
+      except ValueError:
+        voter = None
+
+    if not voter:
+      return _pending_email_vote_response(
+        request, pending=pending,
+        error=gettext('This email address is not eligible to vote in this election.'),
+        status=403,
+      )
+
+    cast_vote = _build_cast_vote(request, election, voter, pending.encrypted_vote)
+    issues = cast_vote.issues(election)
+    if issues:
+      return _pending_email_vote_response(
+        request, pending=pending,
+        error=gettext('The saved ballot cannot be cast for this election.'),
+        status=400,
+      )
+
+    cast_vote.save()
+    pending.used_at = datetime.datetime.utcnow()
+    pending.cast_vote = cast_vote
+    pending.encrypted_vote = ''
+    pending.save(update_fields=['used_at', 'cast_vote', 'encrypted_vote'])
+
+    request.session['user'] = {
+      'type': 'edu_email',
+      'user_id': pending.email,
+      'name': pending.email,
+      'info': user_info,
+      'token': None,
+    }
+    request.session.pop(PENDING_EMAIL_VOTE_SESSION_KEY, None)
+    request.session.pop('encrypted_vote', None)
+
+    cast_vote_id = cast_vote.id
+    transaction.on_commit(
+      lambda: tasks.cast_vote_verify_and_store.delay(
+        cast_vote_id=cast_vote_id, status_update_message=None
+      )
+    )
+
+  return HttpResponseRedirect(
+    settings.SECURE_URL_HOST + reverse(one_election_cast_done, args=[election.uuid])
+  )
+
+
 @election_view()
 def one_election_cast_confirm(request, election):
   user = get_user(request)    
@@ -838,27 +1012,7 @@ def one_election_cast_confirm(request, election):
 
   # if this user is a voter, prepare some stuff
   if voter:
-    vote = datatypes.LDObject.fromDict(utils.from_json(encrypted_vote), type_hint='legacy/EncryptedVote').wrapped_obj
-
-    cast_ip = None
-    if settings.STORE_CAST_IP:
-      if 'HTTP_X_FORWARDED_FOR' in request.META:
-        # HTTP_X_FORWARDED_FOR sometimes has a comma-delimited list of IPs.
-        # Here we want the originating IP address.
-        cast_ip = request.META.get('HTTP_X_FORWARDED_FOR').split(',')[0].strip() or None
-      else:
-        cast_ip = request.META.get('REMOTE_ADDR', None)
-
-    # prepare the vote to cast
-    cast_vote_params = {
-      'vote' : vote,
-      'voter' : voter,
-      'vote_hash': vote_fingerprint,
-      'cast_at': datetime.datetime.utcnow(),
-      'cast_ip': cast_ip
-    }
-
-    cast_vote = CastVote(**cast_vote_params)
+    cast_vote = _build_cast_vote(request, election, voter, encrypted_vote)
   else:
     cast_vote = None
     
@@ -929,6 +1083,7 @@ def one_election_cast_confirm(request, election):
     
     # don't store the vote in the voter's data structure until verification
     cast_vote.save()
+    _mark_session_pending_vote_used(request, election, cast_vote)
 
     # status update?
     if request.POST.get('status_update', False):

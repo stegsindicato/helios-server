@@ -26,3 +26,5 @@ ELECTIONS_VERIFIER_SINGLE_BALLOT="elections@verifier@single-ballot"
 ELECTIONS_NEW="elections@new"
 ELECTIONS_ADMINISTERED="elections@administered"
 ELECTIONS_VOTED="elections@voted"
+
+PENDING_EMAIL_VOTE="pending-email-vote"
