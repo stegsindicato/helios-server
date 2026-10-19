@@ -90,12 +90,32 @@ services:
       URL_HOST: https://${HELIOS_HOST}
       SECURE_URL_HOST: https://${HELIOS_HOST}
 
+
+      # --------------------------------------------------------
+      # Identidad / localización
+      # --------------------------------------------------------
+
       SITE_TITLE: ${HELIOS_SITE_TITLE}
+      MAIN_LOGO_URL: /static/branding/logo.png
+
+      LANGUAGE_CODE: gl
+      TIME_ZONE: Europe/Madrid
+
       HELP_EMAIL_ADDRESS: ${HELP_EMAIL}
 
+
+      # --------------------------------------------------------
+      # Comportamiento Helios
+      # --------------------------------------------------------
+
       MASTER_HELIOS: "0"
+
       SHOW_LOGIN_OPTIONS: "1"
       SHOW_USER_INFO: "1"
+
+      HELIOS_VOTER_EMAIL_CUTOFF_WEEKS: "3"
+
+      SESSION_COOKIE_SAMESITE: Lax
 
 
       # --------------------------------------------------------

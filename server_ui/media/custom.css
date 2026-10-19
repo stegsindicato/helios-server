@@ -1,0 +1,330 @@
+/* =========================================================
+   Cabeceira inspirada en asembleasensino.gal
+   ========================================================= */
+
+.aaep-header {
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    box-shadow: none;
+
+    min-height: 86px;
+    padding-left: max(24px, calc((100vw - 1200px) / 2));
+    padding-right: max(24px, calc((100vw - 1200px) / 2));
+}
+
+
+/* ---------------------------------------------------------
+   Logo
+   --------------------------------------------------------- */
+
+.aaep-header .title-area {
+    background: transparent;
+}
+
+.aaep-header .name {
+    height: 86px;
+}
+
+.aaep-header .site-logo {
+    height: 86px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.aaep-header .site-logo a {
+    display: flex !important;
+    align-items: center;
+    height: 100%;
+}
+
+.aaep-header .site-logo img {
+    display: block;
+    max-height: 58px;
+    width: auto;
+}
+
+
+/* ---------------------------------------------------------
+   Navegación
+   --------------------------------------------------------- */
+
+.aaep-header .top-bar-section,
+.aaep-header .top-bar-section ul,
+.aaep-header .top-bar-section li,
+.aaep-header .top-bar-section li:not(.has-form),
+.aaep-header .top-bar-section li:not(.has-form) a:not(.button) {
+    background: transparent;
+}
+
+
+/* enlaces */
+
+.aaep-header .top-bar-section li:not(.has-form) a:not(.button) {
+    color: #161616;
+
+    height: 86px;
+    line-height: 86px;
+
+    padding: 0 14px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    transition:
+        color .15s ease,
+        opacity .15s ease;
+}
+
+
+/* hover sencillo, como nunha web editorial */
+
+.aaep-header .top-bar-section li:not(.has-form) a:not(.button):hover,
+.aaep-header .top-bar-section li:not(.has-form) a:not(.button):focus {
+    background: transparent;
+    color: #161616;
+    opacity: .55;
+}
+
+
+/* eliminamos os divisores típicos de Foundation */
+
+.aaep-header .top-bar-section .divider {
+    display: none;
+}
+
+
+/* ---------------------------------------------------------
+   Nome do sitio
+   --------------------------------------------------------- */
+
+.aaep-header .site-title-nav > li > a {
+    font-weight: 700 !important;
+}
+
+
+/* ---------------------------------------------------------
+   Móbil
+   --------------------------------------------------------- */
+
+@media only screen and (max-width: 40em) {
+
+    .aaep-header {
+        min-height: 70px;
+        padding: 0;
+    }
+
+    .aaep-header .title-area {
+        height: 70px;
+        padding: 0 16px;
+    }
+
+    .aaep-header .name,
+    .aaep-header .site-logo {
+        height: 70px;
+    }
+
+    .aaep-header .site-logo img {
+        max-height: 48px;
+    }
+
+
+    /* fondo branco tamén ao despregar o menú */
+
+    .aaep-header.expanded,
+    .aaep-header.expanded .title-area,
+    .aaep-header.expanded .top-bar-section,
+    .aaep-header.expanded .top-bar-section ul,
+    .aaep-header.expanded .top-bar-section li {
+        background: #fff;
+    }
+
+
+    .aaep-header.expanded
+    .top-bar-section
+    li:not(.has-form)
+    a:not(.button) {
+        color: #161616;
+
+        height: auto;
+        line-height: 1.4;
+
+        padding: 13px 20px;
+
+        border-top: 1px solid #eee;
+    }
+
+
+    /* icona do menú sobre fondo branco */
+
+    .aaep-header .toggle-topbar.menu-icon a {
+        color: #161616;
+    }
+
+    .aaep-header .toggle-topbar.menu-icon a span::after {
+        box-shadow:
+            0 0 0 1px #161616,
+            0 7px 0 1px #161616,
+            0 14px 0 1px #161616;
+    }
+}
+
+
+/* =========================================================
+   Footer AAEP
+   ========================================================= */
+
+.aaep-footer {
+    background: #171717;
+    color: #f5f5f2;
+
+    margin-top: 5rem;
+    padding: 4.5rem max(24px, calc((100vw - 1200px) / 2)) 1.5rem;
+}
+
+
+/* Bloque principal */
+
+.aaep-footer-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 4rem;
+
+    padding-bottom: 4rem;
+}
+
+
+/* Lema */
+
+.aaep-footer-claim p {
+    margin: 0;
+
+    color: #fff;
+
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 700;
+    line-height: .95;
+    letter-spacing: -0.04em;
+}
+
+
+/* Columnas */
+
+.aaep-footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .55rem;
+}
+
+.aaep-footer-column h4 {
+    margin: 0 0 .75rem;
+
+    color: #888;
+    font-size: .8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.aaep-footer-column a {
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.aaep-footer-column a:hover,
+.aaep-footer-column a:focus {
+    color: #fff;
+    opacity: .6;
+}
+
+
+/* Parte inferior */
+
+.aaep-footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 2rem;
+
+    padding-top: 1.25rem;
+
+    border-top: 1px solid rgba(255,255,255,.18);
+
+    color: #999;
+    font-size: .85rem;
+}
+
+
+/* Sesión Helios */
+
+.aaep-footer-session {
+    text-align: right;
+}
+
+.aaep-footer-session a {
+    margin-left: .75rem;
+    color: #ddd;
+}
+
+.aaep-footer-session a:hover {
+    color: #fff;
+}
+
+
+/* ---------------------------------------------------------
+   Móbil
+   --------------------------------------------------------- */
+
+@media only screen and (max-width: 40em) {
+
+    .aaep-footer {
+        margin-top: 3rem;
+        padding: 3rem 20px 1.5rem;
+    }
+
+    .aaep-footer-main {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+
+        padding-bottom: 3rem;
+    }
+
+    .aaep-footer-claim p {
+        font-size: 3rem;
+    }
+
+    .aaep-footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .75rem;
+    }
+
+    .aaep-footer-session {
+        text-align: left;
+    }
+
+    .aaep-footer-session a {
+        margin-left: 0;
+        margin-right: .75rem;
+    }
+}
+
+
+.home-intro {
+    max-width: 820px;
+    margin: 2.5rem 0 3rem;
+}
+
+.home-intro p {
+    margin-bottom: 1.1rem;
+    font-size: 1.08rem;
+    line-height: 1.65;
+}
+
+.home-intro-cta {
+    margin-top: 1.75rem;
+    font-size: 1.12rem;
+}

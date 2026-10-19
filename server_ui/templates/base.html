@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/static/foundation-tweaks.css">
   <link rel="stylesheet" href="/static/main.css">
   <link rel="stylesheet" href="/static/helios/timezone-display.css">
+  <link rel="stylesheet" href="/static/custom.css">
 
 {% if settings.DEBUG %}  
   <script src="/static/foundation/js/vendor/custom.modernizr.js"></script>
@@ -48,11 +49,15 @@
 </head>
 <body>
   <div class="wrapper">
-  <nav class="top-bar">
+  <nav class="top-bar aaep-header">
     <ul class="title-area">
       <!-- Title Area -->
       <li class="name">
-        <h1><a href="/"><img src="/static/tinylogo.png"></a></h1>
+        <h1 class="site-logo">
+          <a href="/">
+            <img src="{{ settings.TOP_LOGO_URL }}" alt="{{ settings.SITE_TITLE }}">
+          </a>
+        </h1>
       </li>
       <li class="toggle-topbar menu-icon"><a href="#" onclick="$('nav').toggleClass('expanded'); return false;"><span>{% trans "Menu" %}</span></a>
       </li>
@@ -66,7 +71,7 @@
 	<li class="divider"></li>
 	{% endif %}
 	{% if not settings.MASTER_HELIOS %}
-	<li><a href="http://heliosvoting.org">{% trans "About Helios" %}</a></li>
+	<!--<li><a href="http://heliosvoting.org">{% trans "About Helios" %}</a></li>-->
 	{% endif %}
       </ul>
       
@@ -85,7 +90,7 @@
         <li><a href="/privacy">{% trans "Privacy" %}</a></li>
 	{% endif %}
         <li class="divider"></li>
-        <li><a href="mailto:{{settings.HELP_EMAIL_ADDRESS}}">{% trans "Help!" %}</a></li>
+        <!--<li><a href="mailto:{{settings.HELP_EMAIL_ADDRESS}}">{% trans "Help!" %}</a></li>-->
       </ul>
     </section>
   </nav>
@@ -100,34 +105,79 @@
   <div class="push"></div>
   </div>
 
-  <div class="footer" id="footer">
-<!--    <span style="float:right;">
-      {% if settings.FOOTER_LOGO_URL %}
-      <img src="{{settings.FOOTER_LOGO_URL}}" />
-      {% endif %}
-    </span>-->
-    {% if user %}
-    {% blocktrans with user_html=user.display_html_small|safe trimmed %}
-    logged in as <b>{{ user_html }}</b>&nbsp;&nbsp;
-    {% endblocktrans %}
-    <a class="tiny button" href="{% url "auth@logout" %}?return_url={{CURRENT_URL}}">{% trans "logout" %}</a><br />
-    {% else %}
-    {% if voter %}
-    {% firstof voter.alias voter.name as voter_display_name %}
-    {% blocktrans with election_name=voter.election.name trimmed %}
-    You are signed in as voter <u>{{ voter_display_name }}</u> in election <u>{{ election_name }}</u>.
-    {% endblocktrans %}
-    [<a href="{{settings.SECURE_URL_HOST}}{% url "auth@logout" %}?return_url={{CURRENT_URL}}">{% trans "sign out" %}</a>]
-    {% else %}
-{% if settings.SHOW_LOGIN_OPTIONS %}
-    {% trans "not logged in." %} <a class="tiny button" href="{{settings.SECURE_URL_HOST}}{% url "auth@index" %}?return_url={{CURRENT_URL}}">{% trans "log in" %}</a>
-{% else %}
-{% trans "powered by" %} <a href="http://heliosvoting.org">{% trans "Helios Voting" %}</a>.
-{% endif %}
-    {% endif %}
-    {% endif %}
-      <br clear="right" />
+  <footer class="aaep-footer">
+
+  <div class="aaep-footer-main">
+
+    <div class="aaep-footer-claim">
+      <p>O público<br>organízase.</p>
     </div>
+
+    <div class="aaep-footer-column">
+      <h4>Legal</h4>
+      <a href="https://asembleasensino.gal/">
+        Aviso legal e privacidade
+      </a>
+    </div>
+
+    <div class="aaep-footer-column">
+      <h4>Contacto</h4>
+
+      <a href="mailto:info@asembleasensino.gal">
+        info@asembleasensino.gal
+      </a>
+
+      <a href="https://instagram.com/asembleasensino"
+         target="_blank"
+         rel="noopener noreferrer">
+        @asembleasensino
+      </a>
+    </div>
+
+  </div>
+
+
+  <div class="aaep-footer-bottom">
+
+    <div class="aaep-footer-location">
+      Galiza · {% now "Y" %}
+    </div>
+
+    <div class="aaep-footer-session">
+
+      {% if user %}
+        {% blocktrans with user_html=user.display_html_small|safe %}
+          Sesión iniciada como <b>{{ user_html }}</b>
+        {% endblocktrans %}
+
+        <a href="{% url "auth@logout" %}?return_url={{ CURRENT_URL }}">
+          {% trans "Pechar sesión" %}
+        </a>
+
+      {% elif voter %}
+
+        {% blocktrans with voter_name=voter.alias|default:voter.name election_name=voter.election.name %}
+          Sesión iniciada como votante <u>{{ voter_name }}</u>
+          na elección <u>{{ election_name }}</u>.
+        {% endblocktrans %}
+
+        <a href="{{ settings.SECURE_URL_HOST }}{% url "auth@logout" %}?return_url={{ CURRENT_URL }}">
+          {% trans "Pechar sesión" %}
+        </a>
+
+      {% elif settings.SHOW_LOGIN_OPTIONS %}
+
+        <a href="{{ settings.SECURE_URL_HOST }}{% url "auth@index" %}?return_url={{ CURRENT_URL }}">
+          {% trans "Iniciar sesión" %}
+        </a>
+
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</footer>
   
   </div>
       <script>
