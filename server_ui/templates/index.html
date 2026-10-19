@@ -7,8 +7,7 @@
 {% endblock %}
 
 {% block content %}
-
-<div class="row"><div class="large-5 columns large-centered"><a href="/"><img border="0" src="{{ settings.MAIN_LOGO_URL }}" /></a></div></div>
+<!-- <div class="row"><div class="large-5 columns large-centered"><a href="/"><img border="0" src="{{ settings.MAIN_LOGO_URL }}" /></a></div></div>-->
 <div class="row">&nbsp;</div>
 <div class="large-9 columns">
   {% if settings.MASTER_HELIOS %}
@@ -35,9 +34,36 @@ We believe democracy is important, whether it’s your book club, parent-teacher
 {% endif %}
 
   {% else %}
-  <p style="font-size: 1.4em;">
-    {{settings.WELCOME_MESSAGE|safe}}
-  </p>
+  <section class="home-intro">
+
+    <p>
+      Esta é a plataforma de participación das
+      <strong>Asembleas Abertas do Ensino Público</strong>,
+      creada para realizar consultas ao profesorado do ensino público galego
+      dun xeito seguro, transparente e verificable.
+    </p>
+
+    <p>
+      Esta plataforma emprega <strong>Helios</strong>, un software libre de
+      votación electrónica. A identificación das persoas participantes serve
+      para comprobar o dereito a participar e evitar votos duplicados, pero
+      <strong>non para coñecer o contido do voto</strong>: a papeleta cífrase
+      no propio navegador antes de ser enviada.
+    </p>
+
+    <p>
+      Helios permite ademais comprobar que cada voto foi correctamente recibido
+      e incluído no escrutinio mediante un <strong>código de seguimento</strong>,
+      e ofrece mecanismos de verificación criptográfica do proceso.
+    </p>
+
+    <p class="home-intro-cta">
+      <strong>Participa na consulta e fai valer a túa voz.</strong>
+      A enquisa que atoparás a continuación leva só uns minutos e axudaranos
+      a tomar decisións colectivas cunha participación o máis ampla posible.
+    </p>
+
+  </section>
   
   {% if elections|length %}
   <p>
