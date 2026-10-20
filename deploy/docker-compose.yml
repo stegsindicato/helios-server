@@ -96,7 +96,7 @@ services:
       # --------------------------------------------------------
 
       SITE_TITLE: ${HELIOS_SITE_TITLE}
-      MAIN_LOGO_URL: /static/branding/logo.png
+      TOP_LOGO_URL: /static/branding/logo.png
 
       LANGUAGE_CODE: gl
       TIME_ZONE: Europe/Madrid
