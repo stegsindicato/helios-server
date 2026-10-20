@@ -330,3 +330,199 @@
     margin-top: 1.75rem;
     font-size: 1.12rem;
 }
+
+
+/* =========================================================
+   Consultas destacadas
+   ========================================================= */
+
+.featured-elections {
+    margin-top: 3.5rem;
+    margin-bottom: 4rem;
+}
+
+.featured-elections-heading {
+    margin-bottom: 1.8rem;
+}
+
+.section-kicker {
+    display: block;
+    margin-bottom: .4rem;
+
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+
+    color: #777;
+}
+
+.featured-elections-heading h2 {
+    margin: 0;
+
+    font-size: 2.3rem;
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -.03em;
+}
+
+
+/* Lista */
+
+.featured-elections-list {
+    border-top: 1px solid #d9d9d5;
+}
+
+
+/* Cada consulta */
+
+.featured-election {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(260px, .9fr);
+    gap: 3rem;
+
+    padding: 2rem 0;
+
+    border-bottom: 1px solid #d9d9d5;
+}
+
+
+/* Tipo */
+
+.featured-election-type {
+    display: block;
+
+    margin-bottom: .65rem;
+
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+
+    color: #777;
+}
+
+
+/* Título */
+
+.featured-election-title {
+    margin: 0 0 1rem;
+
+    font-size: 1.65rem;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+}
+
+.featured-election-title a {
+    color: #171717;
+    text-decoration: none;
+}
+
+.featured-election-title a:hover,
+.featured-election-title a:focus {
+    opacity: .6;
+}
+
+
+/* Enlace */
+
+.featured-election-link {
+    display: inline-block;
+
+    color: #171717;
+    font-size: .9rem;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+.featured-election-link:hover,
+.featured-election-link:focus {
+    opacity: .55;
+}
+
+
+/* Datas */
+
+.featured-election-dates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.featured-election-date-label {
+    display: block;
+
+    margin-bottom: .35rem;
+
+    color: #777;
+
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.featured-election-date-value {
+    display: block;
+
+    color: #171717;
+
+    font-size: .9rem;
+    line-height: 1.45;
+}
+
+
+/*
+ * Na portada interesa a hora local e non repetir
+ * "UTC / hora local", que ocupa demasiado.
+ */
+
+.featured-election-date .tz-utc,
+.featured-election-date .tz-separator {
+    display: none;
+}
+
+
+/* Sen consultas */
+
+.featured-elections-empty {
+    padding: 2rem 0;
+    border-top: 1px solid #d9d9d5;
+}
+
+.featured-elections-empty h3 {
+    margin-top: .5rem;
+    font-size: 1.4rem;
+}
+
+
+/* ---------------------------------------------------------
+   Móbil
+   --------------------------------------------------------- */
+
+@media only screen and (max-width: 40em) {
+
+    .featured-elections {
+        margin-top: 2.5rem;
+    }
+
+    .featured-elections-heading h2 {
+        font-size: 2rem;
+    }
+
+    .featured-election {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+
+        padding: 1.6rem 0;
+    }
+
+    .featured-election-title {
+        font-size: 1.4rem;
+    }
+
+    .featured-election-dates {
+        grid-template-columns: 1fr 1fr;
+    }
+}

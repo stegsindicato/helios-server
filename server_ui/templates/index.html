@@ -1,5 +1,6 @@
 {% extends 'server_ui/templates/base.html' %}
 {% load i18n %}
+{% load timezone_tags %}
 {% block title %}{{ settings.SITE_TITLE }}{% endblock %}
 
 {% block header %}
@@ -64,20 +65,96 @@ We believe democracy is important, whether it’s your book club, parent-teacher
     </p>
 
   </section>
-  
-  {% if elections|length %}
-  <p>
+
+{% if elections|length %}
+
+<section class="featured-elections">
+
+  <div class="featured-elections-heading">
+    <span class="section-kicker">{% trans "Featured elections" %}</span>
+    <h2>{% trans "Take part" %}</h2>
+  </div>
+
+  <div class="featured-elections-list">
+
     {% for election in elections %}
-    <div class="panel">
-      <a style="font-size: 1.4em;" href="{% url "shortcut@election" election.short_name %}">{{election.name}}</a>{% if settings.SHOW_USER_INFO %}<br /> {% blocktrans with admin_html=election.admin.display_html_small|safe %}by {{ admin_html }}{% endblocktrans %}{% endif %}
-    </div>
-    <br />
+
+    <article class="featured-election">
+
+      <div class="featured-election-main">
+
+        <span class="featured-election-type">
+          {% if election.election_type == "referendum" %}
+            {% trans "Referendum" %}
+          {% else %}
+            {% trans "Election" %}
+          {% endif %}
+        </span>
+
+        <h3 class="featured-election-title">
+          <a href="{% url "shortcut@election" election.short_name %}">
+            {{ election.name }}
+          </a>
+        </h3>
+
+        <a
+          class="featured-election-link"
+          href="{% url "shortcut@election" election.short_name %}">
+          {% trans "View election" %} →
+        </a>
+
+      </div>
+
+      <div class="featured-election-dates">
+
+        <div class="featured-election-date">
+          <span class="featured-election-date-label">
+            {% trans "Starts" %}
+          </span>
+
+          <span class="featured-election-date-value">
+            {% if election.voting_start_at %}
+              {{ election.voting_start_at|utc_time }}
+            {% else %}
+              {% trans "No scheduled date" %}
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="featured-election-date">
+          <span class="featured-election-date-label">
+            {% trans "Ends" %}
+          </span>
+
+          <span class="featured-election-date-value">
+            {% if election.voting_end_at %}
+              {{ election.voting_end_at|utc_time }}
+            {% else %}
+              {% trans "No scheduled date" %}
+            {% endif %}
+          </span>
+        </div>
+
+      </div>
+
+    </article>
+
     {% endfor %}
-  </p>
-  {% else %}
-  <h4>{% trans "no featured elections at the moment" %}</h4>
-  {% endif %}
+
+  </div>
+
+</section>
+
+{% else %}
+
+<section class="featured-elections featured-elections-empty">
+  <span class="section-kicker">{% trans "Elections" %}</span>
+  <h3>{% trans "There are no featured elections at the moment." %}</h3>
+</section>
+
 {% endif %}
+
+{% endif %}  {# settings.MASTER_HELIOS #}
   
 </div>
 
