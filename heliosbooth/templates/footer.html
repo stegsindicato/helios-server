@@ -1,9 +1,9 @@
-<div style="text-align:center; width: 100%; padding: 3px 5px 3px 5px;">
+<div class="booth-fingerprint">
 <span>
   {#if $T.election.BOGUS_P}
   {$T.i18n.previewOnly}
   {#else}
-  {$T.i18n.electionFingerprint} <span id="election_hash" style="font-weight:bold;">{$T.election.hash}</span>
+  {$T.i18n.electionFingerprint} <span id="election_hash">{$T.election.hash}</span>
   {#/if}
 </span>
 </div>

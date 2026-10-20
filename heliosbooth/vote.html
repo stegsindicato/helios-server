@@ -6,6 +6,7 @@
   <title>Helios Voting Booth</title>
   <link rel="stylesheet" type="text/css" href="css/booth.css" />
   <link rel="stylesheet" type="text/css" href="css/forms.css" />
+  <link rel="stylesheet" type="text/css" href="css/aaep.css" />
 
 <!--
   <script language="javascript" src="js/jscrypto/class.js"></script>
@@ -32,9 +33,13 @@
 
 <body>
 <div id="wrapper">
-<div id="banner" class="edge">
-  <div style="text-align:center; width: 100%;"><span id="booth_title">Helios Voting Booth</span>
-      <div style="float: right; margin-right: 10px; font-size: 0.8em;"><span><a id="exit_link" href="javascript:BOOTH.exit();">Exit</a></span></div>
+<div id="banner" class="edge booth-header">
+  <div class="booth-header-inner">
+    <div class="booth-brand">
+      <img class="booth-logo" src="/static/branding/logo.svg" alt="Asembleas Abertas do Ensino Público" />
+      <span id="booth_title" class="booth-title">Helios Voting Booth</span>
+    </div>
+    <a id="exit_link" class="booth-exit" href="javascript:BOOTH.exit();">Exit</a>
   </div>
 </div>
 <div id="content">

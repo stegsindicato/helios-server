@@ -65,9 +65,9 @@
     encryptionMayTake: gettext('This may take up to two minutes.'),
 
     // Translators: These are the three steps shown before voting starts.
-    stepSelect: gettext('<b>Select</b> your preferred options.'),
-    stepReview: gettext('<b>Review</b> your choices, which are then encrypted.'),
-    stepSubmit: gettext('<b>Submit</b> your encrypted ballot and authenticate to verify your eligibility.'),
+    stepSelect: gettext('Select your preferred options.'),
+    stepReview: gettext('Review your choices, which are then encrypted.'),
+    stepSubmit: gettext('Submit your encrypted ballot and authenticate to verify your eligibility.'),
     voteInstructions: gettext('To vote, follow these steps:'),
 
     previewOnly: gettext('The public key for this election is not yet ready. This election is in preview mode only.'),

@@ -1,21 +1,19 @@
-<div id="questions_div">
-<p>
+<div id="questions_div" class="booth-intro">
+<p class="booth-lead">
     {$T.i18n.voteInstructions}
 </p>
 
-<ol>
+<ol class="booth-steps">
     <li>{$T.i18n.stepSelect}</li>
-<br />
-
     <li>{$T.i18n.stepReview}</li>
-<br />
-
     <li>{$T.i18n.stepSubmit}</li>
 </ol>
 
-<div align="center"><button onclick="BOOTH.show_question(0);">{$T.i18n.start}</button></div>
+<div class="booth-primary-action">
+  <button class="booth-primary-button" onclick="BOOTH.show_question(0);">{$T.i18n.start}</button>
+</div>
 </div>
 
-<p>
+<p class="booth-help">
   <a target="_new" href="{$T.help_mailto}">{$T.i18n.contactForHelp}</a>
 </p>

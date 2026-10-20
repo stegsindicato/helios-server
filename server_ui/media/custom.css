@@ -526,3 +526,259 @@
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* =========================================================
+   Election view
+   ========================================================= */
+
+.election-hero {
+    max-width: 900px;
+    padding: 3rem 0 2.5rem;
+}
+
+
+/* Tipo */
+
+.election-kicker {
+    margin-bottom: .8rem;
+
+    color: #777;
+
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.election-status {
+    margin-left: .8rem;
+}
+
+
+/* Título */
+
+.election-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.election-title-row h1 {
+    max-width: 800px;
+
+    margin: 0;
+
+    font-size: clamp(2.3rem, 5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -.045em;
+    font-weight: 700;
+}
+
+
+/* Datas */
+
+.election-dates {
+    display: flex;
+    gap: 4rem;
+
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+
+    border-top: 1px solid #d9d9d5;
+}
+
+.election-date-label {
+    display: block;
+
+    margin-bottom: .35rem;
+
+    color: #777;
+
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.election-date-value {
+    display: block;
+
+    color: #171717;
+
+    font-size: .95rem;
+    line-height: 1.45;
+}
+
+
+/* Nesta vista amosamos a hora local */
+
+.election-date .tz-utc,
+.election-date .tz-separator {
+    display: none;
+}
+
+
+/* Descrición */
+
+.election-description {
+    max-width: 760px;
+
+    margin-top: 2.5rem;
+
+    font-size: 1.08rem;
+    line-height: 1.65;
+}
+
+
+/* Navegación */
+
+.election-section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+
+    margin: 0 0 2.5rem;
+
+    border-top: 1px solid #d9d9d5;
+    border-bottom: 1px solid #d9d9d5;
+}
+
+.election-section-nav a {
+    display: block;
+
+    padding: 1rem 1.4rem 1rem 0;
+    margin-right: 1.4rem;
+
+    color: #171717;
+
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.election-section-nav a:hover {
+    opacity: .55;
+}
+
+
+/* Administración */
+
+.election-admin-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: .6rem 1rem;
+
+    margin-bottom: 2.5rem;
+    padding: 1rem 0;
+
+    border-bottom: 1px solid #ddd;
+
+    color: #777;
+    font-size: .85rem;
+}
+
+.election-admin-label {
+    color: #171717;
+    font-weight: 700;
+}
+
+.election-admin-help {
+    margin-left: auto;
+}
+
+
+/* CTA votar */
+
+.election-vote-action {
+    margin: 3rem 0;
+    text-align: center;
+}
+
+.election-vote-button {
+    display: inline-block;
+
+    min-width: 280px;
+
+    padding: 1rem 2rem;
+
+    background: #b35335;
+    color: #fff;
+
+    border: none;
+    border-radius: 2px;
+
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+
+    text-align: center;
+    text-decoration: none;
+
+    transition:
+        background .15s ease,
+        transform .15s ease;
+}
+
+.election-vote-button:hover,
+.election-vote-button:focus {
+    background: #93442c;
+    color: #fff;
+
+    transform: translateY(-1px);
+}
+
+.election-vote-note {
+    margin-top: .9rem;
+
+    color: #666;
+    font-size: .9rem;
+}
+
+
+/* Móbil */
+
+@media only screen and (max-width: 40em) {
+
+    .election-hero {
+        padding-top: 2rem;
+    }
+
+    .election-title-row {
+        display: block;
+    }
+
+    .election-title-row h1 {
+        font-size: 2.5rem;
+    }
+
+    .election-edit-button {
+        margin-top: 1rem;
+    }
+
+    .election-dates {
+        gap: 2rem;
+    }
+
+    .election-section-nav {
+        display: block;
+    }
+
+    .election-section-nav a {
+        margin: 0;
+        padding: .9rem 0;
+
+        border-bottom: 1px solid #eee;
+    }
+
+    .election-section-nav a:last-child {
+        border-bottom: none;
+    }
+
+    .election-admin-help {
+        width: 100%;
+        margin-left: 0;
+    }
+}
