@@ -83,6 +83,7 @@ We believe democracy is important, whether it’s your book club, parent-teacher
 
 <div class="large-3 columns" id="mystuff">
 <div class="row">&nbsp;</div>
+{% if create_p %}
 <div class="panel row">
 {% if user %}
 <!--<div class="row right">{{user.display_html_big|safe}}</div>-->
@@ -127,6 +128,7 @@ We believe democracy is important, whether it’s your book club, parent-teacher
 {% endif %}
 {% endif %}
 </div>
+  {% endif %}
 </div>
 
 

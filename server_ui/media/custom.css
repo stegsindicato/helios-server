@@ -316,6 +316,8 @@
 .home-intro {
     max-width: 820px;
     margin: 2.5rem 0 3rem;
+    text-align: justify;
+    text-indent: 1em;
 }
 
 .home-intro p {
