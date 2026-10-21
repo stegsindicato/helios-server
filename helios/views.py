@@ -359,6 +359,23 @@ def one_election_view(request, election):
                           'show_result': show_result,
                           'test_cookie_url': test_cookie_url})
 
+@election_view()
+def one_election_results_view(request, election):
+  user = get_user(request)
+  admin_p = user_can_admin_election(user, election)
+
+  # Public once results have been released. Administrators may preview
+  # computed results before they are released.
+  if not election.result_released_at:
+    if not election.result or not admin_p:
+      raise PermissionDenied
+
+  return render_template(request, 'election_results', {
+      'election': election,
+      'admin_p': admin_p,
+  })
+
+
 def test_cookie(request):
   continue_url = request.GET['continue_url']
   request.session.set_test_cookie()

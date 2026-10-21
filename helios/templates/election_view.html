@@ -257,21 +257,21 @@ once you do this, the election will be ready for voting and will open automatica
 <br />
 
 {% if show_result %}
-{% if election.result_released_at %}
-<span class="highlight-box round">
-    {% trans "This election is complete." %}
-</span><br /><br /><br />
-{% endif %}
+<section class="election-results-callout">
+  <span class="section-kicker">{% trans "Results" %}</span>
+  <h2>{% trans "The results are available" %}</h2>
 
-<h3 class="highlight-box">{% trans "Tally" %}</h3>
-{% for question in election.pretty_result %}
-<b><span style="font-size:0.8em;">{% blocktrans with question_number=forloop.counter %}Question #{{ question_number }}{% endblocktrans %}</span><br />{{question.question}}</b><br />
-<table class="pretty" style="width: auto;">
-{% for answer in question.answers %}
-<tr><td style="padding-right:80px;{% if answer.winner %}font-weight:bold;{% endif %}">{{answer.answer}}</td><td align="right" style="{% if answer.winner %}font-weight:bold;{% endif %}">{{answer.count}}</td></tr>
-{% endfor %}
-</table>
-{% endfor %}
+  {% if election.result_released_at %}
+    <p>{% trans "The voting process is complete. You can now view the final tally." %}</p>
+  {% elif admin_p %}
+    <p>{% trans "The results have been computed but have not yet been released publicly." %}</p>
+  {% endif %}
+
+  <a class="button election-results-button"
+     href="{% url "election@results" election.uuid %}">
+    {% trans "View results" %}
+  </a>
+</section>
 
 {% else %}
 

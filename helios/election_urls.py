@@ -57,6 +57,7 @@ urlpatterns = [
     
     # election voting-process actions
     path('/view', views.one_election_view, name=names.ELECTION_VIEW),
+    path('/results', views.one_election_results_view, name=names.ELECTION_RESULTS_VIEW),
     path('/result', views.one_election_result, name=names.ELECTION_RESULT),
     path('/result_proof', views.one_election_result_proof, name=names.ELECTION_RESULT_PROOF),
     # url(r'^/bboard$', views.one_election_bboard, name=names.ELECTION_BBOARD),

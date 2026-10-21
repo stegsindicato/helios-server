@@ -27,6 +27,7 @@ ELECTION_TRUSTEE_UPLOAD_PK="election@trustee@upload-pk"
 ELECTION_TRUSTEE_DECRYPT_AND_PROVE="election@trustee@decrypt-and-prove"
 ELECTION_TRUSTEE_UPLOAD_DECRYPTION="election@trustee@upload-decryption"
 
+ELECTION_RESULTS_VIEW="election@results"
 ELECTION_RESULT="election@result"
 ELECTION_RESULT_PROOF="election@result@proof"
 ELECTION_BBOARD="election@bboard"

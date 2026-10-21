@@ -1,0 +1,57 @@
+{% extends TEMPLATE_BASE %}
+{% load i18n %}
+
+{% block title %}{% blocktrans with election_name=election.name %}Results — {{ election_name }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+<section class="election-results-page">
+
+  <header class="election-results-hero">
+    <a class="election-results-back" href="{% url "election@view" election.uuid %}">
+      ← {% trans "Back to election" %}
+    </a>
+
+    <span class="section-kicker">{% trans "Results" %}</span>
+    <h1>{{ election.name }}</h1>
+
+    {% if election.result_released_at %}
+      <p class="election-results-status">
+        {% trans "The voting process is complete and these are the final results." %}
+      </p>
+    {% elif admin_p %}
+      <p class="election-results-status election-results-preview">
+        {% trans "These results have not yet been released publicly." %}
+      </p>
+    {% endif %}
+  </header>
+
+  <div class="election-results-list">
+    {% for question in election.pretty_result %}
+      <article class="election-result-question">
+        <header class="election-result-question-header">
+          <span class="election-result-number">
+            {% blocktrans with question_number=forloop.counter %}Question {{ question_number }}{% endblocktrans %}
+          </span>
+          <h2>{{ question.question }}</h2>
+        </header>
+
+        <div class="election-result-answers">
+          {% for answer in question.answers %}
+            <div class="election-result-answer{% if answer.winner %} election-result-answer-winner{% endif %}">
+              <div class="election-result-answer-name">{{ answer.answer }}</div>
+              <div class="election-result-answer-count">{{ answer.count }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </article>
+    {% empty %}
+      <p>{% trans "No results are available." %}</p>
+    {% endfor %}
+  </div>
+
+  <footer class="election-results-footer">
+    <a href="{% url "election@view" election.uuid %}">← {% trans "Back to election" %}</a>
+  </footer>
+
+</section>
+{% endblock %}
