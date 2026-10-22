@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="/static/main.css">
   <link rel="stylesheet" href="/static/helios/timezone-display.css">
   <link rel="stylesheet" href="/static/custom.css">
+  <link rel="stylesheet" href="/static/info-pages.css">
 
 {% if settings.DEBUG %}  
   <script src="/static/foundation/js/vendor/custom.modernizr.js"></script>
@@ -77,6 +78,7 @@
       
       <ul>
         <li><a href="/">{{settings.SITE_TITLE}}</a></li>
+        <li><a href="/help">Axuda</a></li>
 	{% if settings.MASTER_HELIOS %}
         <li class="divider"></li>
         <li class="active"><a href="/about">{% trans "About" %}</a></li>
@@ -86,11 +88,8 @@
         <li><a href="/docs">{% trans "Docs" %}</a></li>
         <li class="divider"></li>
         <li><a href="/faq">{% trans "FAQ" %}</a></li>
-        <li class="divider"></li>
-        <li><a href="/privacy">{% trans "Privacy" %}</a></li>
 	{% endif %}
         <li class="divider"></li>
-        <!--<li><a href="mailto:{{settings.HELP_EMAIL_ADDRESS}}">{% trans "Help!" %}</a></li>-->
       </ul>
     </section>
   </nav>
@@ -114,10 +113,10 @@
     </div>
 
     <div class="aaep-footer-column">
-      <h4>Legal</h4>
-      <a href="https://asembleasensino.gal/">
-        Aviso legal e privacidade
-      </a>
+      <h4>Información</h4>
+      <a href="/help">Axuda</a>
+      <a href="/privacy">Privacidade</a>
+      <a href="https://asembleasensino.gal/aviso-legal/">Aviso legal xeral</a>
     </div>
 
     <div class="aaep-footer-column">

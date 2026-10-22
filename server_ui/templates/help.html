@@ -1,0 +1,93 @@
+{% extends 'server_ui/templates/base.html' %}
+{% block title %}Como votar · Asembleas Abertas do Ensino Público{% endblock %}
+
+{% block content %}
+<main class="aaep-info-page aaep-help-page" id="contido">
+  <header class="aaep-info-hero">
+    <span class="aaep-info-kicker">Guía de participación</span>
+    <h1>Como votar</h1>
+    <p class="aaep-info-lead">Participar nunha consulta das Asembleas Abertas do Ensino Público é sinxelo. Nesta guía explicámosche como completar a votación e comprobar que a túa papeleta foi recibida.</p>
+  </header>
+
+  <nav class="aaep-info-index" aria-label="Contidos desta guía">
+    <a href="#pasos">Pasos para votar</a>
+    <a href="#video">Vídeo explicativo</a>
+    <a href="#dubidas">Dúbidas frecuentes</a>
+  </nav>
+
+  <section id="pasos" class="aaep-info-section" aria-labelledby="pasos-titulo">
+    <span class="aaep-info-kicker">Paso a paso</span>
+    <h2 id="pasos-titulo">O proceso de votación</h2>
+
+    <ol class="aaep-help-steps">
+      <li>
+        <h3>Accede á consulta</h3>
+        <p>Entra na <a href="/">páxina principal da plataforma</a>, abre a consulta na que queres participar e le as súas condicións e datas. Cando estea aberta, preme o botón para votar.</p>
+      </li>
+      <li>
+        <h3>Selecciona as túas respostas</h3>
+        <p>A cabina amosará as preguntas unha a unha. Marca a opción ou as opcións que prefiras, respectando o número de respostas permitido en cada pregunta.</p>
+      </li>
+      <li>
+        <h3>Revisa a papeleta</h3>
+        <p>Antes de enviala, verás un resumo das respostas. Podes volver atrás para cambialas. A cabina cifra a papeleta no teu navegador para protexer o seu contido.</p>
+      </li>
+      <li>
+        <h3>Identifícate cando se che solicite</h3>
+        <p>Para comprobar o dereito a participar, a consulta pode pedirche o correo corporativo <strong>@edu.xunta.gal</strong>. Nese caso recibirás un código de seis cifras: introduce ese código para continuar. A identificación utilízase para verificar a participación, non para publicar as túas respostas.</p>
+      </li>
+      <li>
+        <h3>Confirma o envío do voto</h3>
+        <p>Completa a confirmación da papeleta cifrada ata que apareza a mensaxe de que o voto foi emitido correctamente. Pechar a cabina antes desa confirmación pode deixar o voto sen rexistrar.</p>
+      </li>
+      <li>
+        <h3>Garda o código de seguimento</h3>
+        <p>Ao rematar obterás un código de seguimento da papeleta. Gárdao: permite comprobar que a papeleta cifrada figura no rexistro de votos da consulta, sen mostrar as opcións que escolliches.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="video" class="aaep-info-section" aria-labelledby="video-titulo">
+    <span class="aaep-info-kicker">Videoguía</span>
+    <h2 id="video-titulo">Mira como se vota</h2>
+    <p>Reservamos este espazo para un vídeo no que se amosará todo o proceso, desde a entrada na consulta ata a comprobación da papeleta.</p>
+
+    <!-- Cando estea dispoñible a videoguía, substituír este bloque por un
+         iframe cun URL fixo https://www.youtube-nocookie.com/embed/ID_DO_VIDEO.
+         Para evitar conexións con YouTube sen unha acción da persoa usuaria,
+         é preferible mostrar primeiro unha ligazón que abra o vídeo. -->
+    <div class="aaep-video-placeholder" role="status" aria-label="Vídeo explicativo pendente">
+      <div class="aaep-video-icon" aria-hidden="true">▶</div>
+      <p><strong>Vídeo explicativo</strong></p>
+      <p>Publicarase proximamente.</p>
+    </div>
+  </section>
+
+  <section id="dubidas" class="aaep-info-section" aria-labelledby="dubidas-titulo">
+    <span class="aaep-info-kicker">Información útil</span>
+    <h2 id="dubidas-titulo">Dúbidas frecuentes</h2>
+
+    <div class="aaep-info-faq">
+      <h3>O meu voto é secreto?</h3>
+      <p>A papeleta cífrase antes do seu envío e o escrutinio ordinario descifra os resultados agregados, non cada resposta individual. A identidade da persoa participante e o contido da papeleta trátanse de maneira diferenciada. Podes consultar máis detalles na <a href="/privacy">política de privacidade</a>.</p>
+
+      <h3>Como sei que o meu voto quedou rexistrado?</h3>
+      <p>Conserva o código de seguimento que aparece tras confirmar o voto. Poderás buscalo na listaxe de papeletas ou no centro de seguimento da consulta, segundo a súa configuración.</p>
+
+      <h3>Podo cambiar o meu voto?</h3>
+      <p>Se a consulta continúa aberta e permite votar de novo, podes emitir outra papeleta: Helios contabiliza a última papeleta válida da mesma persoa. A nova papeleta terá o seu propio código de seguimento.</p>
+
+      <h3>Que ocorre se non recibo o correo de verificación?</h3>
+      <p>Comproba o enderezo introducido e revisa as carpetas de correo non desexado. Agarda uns minutos e solicita outro código desde a pantalla de identificación. Se o problema continúa, ponte en contacto co servizo de axuda.</p>
+
+      <h3>Que significa auditar unha papeleta?</h3>
+      <p>Helios permite inspeccionar unha papeleta cifrada como comprobación adicional. Unha papeleta utilizada para a auditoría <strong>non se debe utilizar como voto definitivo</strong>: despois de auditala hai que volver preparar e enviar unha nova papeleta.</p>
+    </div>
+  </section>
+
+  <section class="aaep-info-contact" aria-labelledby="contacto-axuda">
+    <h2 id="contacto-axuda">Precisas axuda?</h2>
+    <p>Se atopas algunha dificultade técnica ou tes dúbidas sobre a participación, escríbenos a <a href="mailto:{{ settings.HELP_EMAIL_ADDRESS }}">{{ settings.HELP_EMAIL_ADDRESS }}</a>.</p>
+  </section>
+</main>
+{% endblock %}

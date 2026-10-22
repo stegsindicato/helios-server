@@ -58,6 +58,9 @@ def docs(request):
 def faq(request):
   return render_template(request, "faq")
 
+def help(request):
+  return render_template(request, "help")
+
 def privacy(request):
   return render_template(request, "privacy")
     

@@ -1,67 +1,113 @@
 {% extends 'server_ui/templates/base.html' %}
-{% block title %}{{ settings.SITE_TITLE }} &mdash; Privacy{% endblock %}
-
-{% block header %}
-{% endblock %}
+{% block title %}Privacidade · Asembleas Abertas do Ensino Público{% endblock %}
 
 {% block content %}
+<main class="aaep-info-page aaep-privacy-page" id="contido">
+  <header class="aaep-info-hero">
+    <span class="aaep-info-kicker">Protección de datos</span>
+    <h1>Política de privacidade</h1>
+    <p class="aaep-info-lead">Información sobre os datos persoais utilizados na plataforma de consultas electrónicas de Asembleas Abertas do Ensino Público, as garantías do proceso de votación e o exercicio dos teus dereitos.</p>
+    <p class="aaep-info-updated">Última actualización: 22 de outubro de 2026.</p>
+  </header>
 
-<div class="large-12-columns">
+  <nav class="aaep-info-index" aria-label="Contidos da política">
+    <a href="#responsable">Responsable</a>
+    <a href="#datos">Datos e finalidades</a>
+    <a href="#voto">Segredo do voto</a>
+    <a href="#conservacion">Conservación</a>
+    <a href="#dereitos">Dereitos</a>
+  </nav>
 
-<div class="row"><h2>Privacy</h2></div>
+  <section class="aaep-info-section" id="responsable">
+    <h2>1. Responsable do tratamento</h2>
+    <p><strong>Asembleas Abertas do Ensino Público (AAEP)</strong> é unha rede aberta e descentralizada de asembleas de traballadoras e traballadores do ensino público galego. Funciona como un <strong>colectivo informal, sen personalidade xurídica propia</strong>, e decide as finalidades e os medios da xestión desta plataforma.</p>
+    <p>Para consultas sobre os teus datos persoais ou para exercer os teus dereitos, podes escribir a <a href="mailto:info@asembleasensino.gal">info@asembleasensino.gal</a>. As solicitudes son atendidas polas persoas autorizadas para a xestión da plataforma.</p>
+    <p>O <a href="https://asembleasensino.gal/aviso-legal/" target="_blank" rel="noopener noreferrer">aviso legal e de privacidade da web principal de AAEP</a> complementa a información desta páxina, que se refire especificamente ás consultas electrónicas.</p>
+  </section>
 
-<div class="row">
+  <section class="aaep-info-section" id="finalidade">
+    <h2>2. Finalidade da plataforma</h2>
+    <p>Esta plataforma permite organizar consultas e votacións entre o persoal do ensino público galego, comprobar quen pode participar, evitar que se contabilicen votos duplicados, realizar escrutinios e ofrecer mecanismos de verificación do proceso.</p>
+    <p>Non ten finalidade comercial. Os datos de participación non se empregarán para elaborar perfís individuais nin para enviar publicidade ou comunicacións alleas á consulta.</p>
+  </section>
 
-<h3>In General</h3>
+  <section class="aaep-info-section" id="datos">
+    <h2>3. Que datos tratamos?</h2>
+    <ul>
+      <li><strong>Identificación e elegibilidade:</strong> enderezo de correo electrónico, identificadores de acceso e información estritamente necesaria para comprobar o dereito ao voto. Nas consultas que empreguen a identificación corporativa solicítase un correo <strong>@edu.xunta.gal</strong>.</li>
+      <li><strong>Participación:</strong> constancia de que se emitiu unha papeleta, identificadores ou alias cando proceda, códigos de seguimento e datos necesarios para evitar duplicidades.</li>
+      <li><strong>Papeletas cifradas:</strong> respostas cifradas e probas criptográficas necesarias para o escrutinio e a verificabilidade.</li>
+      <li><strong>Información técnica:</strong> datos de sesión e rexistros de seguridade ou funcionamento xerados polos servizos que operan a plataforma. A configuración actual de Helios non almacena deliberadamente a IP asociada a cada voto mediante a opción específica de rexistro de IP, aínda que os servidores poden xerar rexistros técnicos de acceso.</li>
+      <li><strong>Axuda e incidencias:</strong> información que facilites voluntariamente ao solicitar soporte.</li>
+    </ul>
+    <p>Facilitar os datos imprescindibles para verificar o dereito ao voto é necesario para participar; se non se proporcionan, non será posible completar a identificación e o envío da papeleta.</p>
+  </section>
 
-<ul>
-<li> Helios is designed with built-in privacy. If you have any questions or concerns about Helios privacy not covered here, <a href="mailto:help@heliosvoting.org">send us an email</a>.</li>
-<li> We collect only the information needed to provide secure, trustworthy elections.</li>
-<li> We make certain information available publicly on our web site as part of the process of auditing elections (details below.) Other than that, we do not give away any information we collect.</li>
-<li> We do not sell any information.</li>
-<li> We do not use external trackers or advertising that could leak information about you, except for Facebook and Twitter share buttons. Even for those, we use origin sandboxing to limit how much Facebook and Twitter can determine about you, and we only use those buttons on the election information page.
-</ul>
+  <section class="aaep-info-section" id="voto">
+    <h2>4. Segredo do voto e comprobación dos resultados</h2>
+    <p>A cabina de Helios <strong>cifra a papeleta no navegador</strong> antes de enviala. O procedemento ordinario combina as papeletas cifradas para obter un escrutinio agregado, que se descifra coa intervención das persoas custodias segundo a configuración da consulta.</p>
+    <p>As persoas administradoras poden necesitar coñecer a identidade ou a participación para xestionar o proceso, pero non deberían acceder ás opcións escollidas por cada persoa no funcionamento ordinario. A separación criptográfica reduce o risco de vincular respostas e identidades; non debe interpretarse como unha garantía absoluta fronte a calquera compromiso das claves ou do dispositivo utilizado.</p>
+    <p>Os <strong>códigos de seguimento</strong> e, cando estean habilitados, os alias de votantes poden ser visibles nas páxinas de verificación pública. Nesa listaxe ordinaria non se deben publicar os nomes nin os enderezos de correo. A administración autorizada dispón de máis información para xestionar a consulta.</p>
+    <p>O código de seguimento serve para comprobar que a papeleta cifrada foi incluída no rexistro, non para descubrir o seu contido. Se se admite votar máis dunha vez, só se contabiliza a última papeleta válida da mesma persoa.</p>
+  </section>
 
-<p>
-<b>If you want to stop reading here, you can: the rest provides detail about the above principles without weakening them.</b>
-</p>
+  <section class="aaep-info-section" id="base-xuridica">
+    <h2>5. Base xurídica</h2>
+    <p>A base xurídica prevista para o tratamento estritamente necesario para a xestión, a integridade e a verificabilidade da consulta é o <strong>interese lexítimo</strong> de AAEP en facilitar un proceso participativo seguro, conforme ao artigo 6.1.f do Regulamento xeral de protección de datos (RXPD). A súa aplicación require unha avaliación e ponderación documentadas cos dereitos das persoas participantes.</p>
+    <p>A participación é voluntaria. Non se utilizará o correo facilitado para finalidades diferentes sen unha base xurídica propia e a correspondente información.</p>
+    <p>As preguntas sobre mobilizacións poden, dependendo do contexto, revelar opinións políticas ou información relacionada coa afiliación sindical. Se unha consulta implica categorías especiais de datos, é necesaria ademais unha condición válida do artigo 9.2 do RXPD, que debe analizarse antes de abrir esa consulta. O interese lexítimo por si só non substitúe esa esixencia.</p>
+  </section>
 
-<hr>
+  <section class="aaep-info-section" id="provedores">
+    <h2>6. Provedores e destinatarios</h2>
+    <p>Para manter a plataforma utilízanse os seguintes servizos:</p>
+    <ul>
+      <li><strong>OVHcloud:</strong> aloxamento do servidor e da infraestrutura onde funciona Helios.</li>
+      <li><strong>Mailjet (Sinch Email):</strong> envío de correos operativos relacionados coa identificación e coa participación.</li>
+    </ul>
+    <p>Non se utiliza ningún servizo de CDN para esta plataforma. A base de datos e os demais compoñentes do sistema execútanse na infraestrutura administrada para AAEP.</p>
+    <p>A páxina de axuda poderá incluír un vídeo de YouTube. Se se incorpora, o servizo externo só deberá cargarse cando a persoa decida abrilo ou reproducilo; nese caso aplicarase tamén a información de privacidade de Google/YouTube.</p>
+    <p>AAEP non vende os datos nin os cede con fins comerciais. Cando os provedores actúan como encargados do tratamento, deben ofrecer as garantías e acordos correspondentes. As posibles transferencias internacionais e os seus mecanismos de garantía deben comprobarse na documentación contractual e dos subencargados.</p>
+  </section>
 
-<h3>For Voters</h3>
+  <section class="aaep-info-section" id="conservacion">
+    <h2>7. Conservación dos datos</h2>
+    <p>AAEP establece como criterio de conservación limitar os datos persoais ao tempo necesario para xestionar cada consulta, verificar o escrutinio e atender posibles incidencias.</p>
+    <ul>
+      <li><strong>Identificación, censo e datos de participación:</strong> obxectivo de conservación máxima ordinaria de <strong>12 meses</strong> desde a publicación definitiva dos resultados.</li>
+      <li><strong>Papeletas cifradas e probas asociadas:</strong> ata <strong>12 meses</strong>, salvo que poida conservarse un arquivo verificable do que se eliminaran os datos persoais e os riscos de reidentificación.</li>
+      <li><strong>Rexistros técnicos:</strong> obxectivo ordinario de <strong>30 días</strong>, salvo incidencias xustificadas.</li>
+      <li><strong>Copias de seguridade:</strong> rotación prevista nun máximo ordinario de <strong>30 días</strong>.</li>
+      <li><strong>Consultas de soporte:</strong> ata <strong>6 meses</strong> desde a súa resolución.</li>
+      <li><strong>Resultados agregados realmente anónimos:</strong> poderán conservarse para documentar historicamente as consultas.</li>
+    </ul>
+    <p>Estes prazos son criterios organizativos que requiren procedementos efectivos de revisión e eliminación. <strong>O software Helios non executa por si só un borrado automático de todos estes datos.</strong> Se existe unha reclamación, incidencia ou obriga legal que xustifique unha conservación adicional, limitarase aos datos necesarios e ao prazo correspondente.</p>
+  </section>
 
-<p><b>About your vote:</b></p>
+  <section class="aaep-info-section" id="dereitos">
+    <h2>8. Dereitos das persoas participantes</h2>
+    <p>Podes solicitar o acceso, a rectificación ou a supresión dos teus datos persoais, a limitación ou a oposición ao tratamento e, cando resulte aplicable, a portabilidade. Tamén poderás retirar calquera consentimento que se che solicitase para unha finalidade específica, sen afectar á licitude do tratamento anterior.</p>
+    <p>Escribe a <a href="mailto:info@asembleasensino.gal">info@asembleasensino.gal</a> indicando o dereito que queres exercer. Poderemos pedir información adicional proporcionada cando sexa necesaria para verificar a identidade da persoa solicitante.</p>
+    <p>Algunhas solicitudes relativas a papeletas xa emitidas poden estar limitadas polas garantías de integridade, segredo e verificabilidade do proceso ou por outras obrigas legais; cada solicitude analizarase individualmente.</p>
+    <p>Se consideras que o tratamento non respecta a normativa, podes presentar unha reclamación ante a <a href="https://www.aepd.es/" target="_blank" rel="noopener noreferrer">Axencia Española de Protección de Datos (AEPD)</a>.</p>
+  </section>
 
-<ul>
-<li> Your vote on Helios is considered extremely private.</li>
-<li> Helios uses SSL to transmit data between your browser and our servers.</li>
-<li> In addition, Helios uses end-to-end encryption so that, even after SSL decryption, your vote is <em>still</em> encrypted with the election key. Helios servers never see your vote. </li>
-<li> In the normal process of a Helios election, your individual vote is never decrypted: encrypted votes are combined into a tally, using a process called homomorphic encryption, and only the final tally &mdash; never an intermediate tally &mdash; is decrypted.</li>
-<li> The trustees of your election, if they all collude, technically have the power to decrypt your individual vote. This action is strongly discouraged and is against Helios policy. It is why high-security elections should use at least 3 trustees with different allegiances. </li>
-<li> Helios may, at your election administrators' discretion, serve as a trustee of your election. This does <em>not</em> give Helios any power to decrypt your vote. In fact, it is probably preferable, since without Helios's collaboration, the remaining trustees cannot decrypt individual votes. It is our policy that Helios, when acting as a trustee, will only decrypt the election tally, never an individual vote.</li>
-<li> When Helios is not acting as a trustee of your election, Helios has no power to decrypt any individual vote.</li>
-</ul>
+  <section class="aaep-info-section" id="seguridade">
+    <h2>9. Seguridade</h2>
+    <p>A plataforma emprega conexións HTTPS, cifrado das papeletas e controis de acceso. O acceso á información administrativa está reservado ás persoas autorizadas, e as claves de descifrado deben ser custodiadas segundo o procedemento establecido para cada consulta.</p>
+    <p>A seguridade dunha votación electrónica tamén depende do dispositivo e do correo da persoa participante. Recoméndase usar equipos de confianza, non compartir os códigos de identificación e pechar a sesión cando corresponda.</p>
+  </section>
 
-<p><b>About non-vote data:</b></p>
+  <section class="aaep-info-section" id="cookies">
+    <h2>10. Cookies e servizos externos</h2>
+    <p>Helios pode utilizar cookies ou mecanismos equivalentes estritamente necesarios para manter a sesión, protexer os formularios e permitir a identificación. A plataforma non incorpora cookies publicitarias nin ferramentas propias de análise comercial ou creación de perfís.</p>
+    <p>Se no futuro se engaden servizos opcionais que requiran consentimento, proporcionarase a información correspondente e solicitarase antes da súa activación cando sexa obrigatorio.</p>
+  </section>
 
-<ul>
-<li> To vote, you will need to present credentials to prove your eligibility. Depending on how your election was set up, this may be a username and password that were generated for you, or a Facebook, Google, Yahoo, or Twitter login. Helios uses the appropriate login interfaces to those external services so that it never has access to your credentials at those services. </li>
-<li> For the purposes of election auditing, Helios stores your name, email address, and the minimal eligibility information needed to qualify you, for example the Facebook group that you belong to that was designated as the eligibility requirement for this election.</li>
-<li> The complete metadata of your vote: where you voted from, what time you voted, and how often you vote (only the last vote counts!), are stored in Helios and may be made available to your election administrators as part of the auditing process. This is critical for ensuring a secure and trustworthy election.</li>
-<li> If your election was made public by the administrator, then some core auditing information is made available to the public: the fact that you voted, the time of your vote, and its tracking number. If your administrator chose to use voter aliases, then your name will be replaced by your pseudonymous voter ID in that dataset. In all cases, Helios takes care to mask or fully hide your email address to prevent email harvesting for spam.</li>
-<li> If your election was made private, then this same information is available to only you, your fellow voters, and your election administrators.</li>
-</ul>
-
-<h3>For Administrators</h3>
-
-
-<ul>
-<li> As an administrator, you have the power to designate who can vote, when the election starts, when the election stops, and when the results are released. Other than that, you have no power beyond what voters in your election have. This is by design.</li>
-<li> To create and administer an election, you will need to log in using Google, Facebook, Yahoo, or Twitter. Helios queries and retains only the basic information needed to authenticate you the next time around: your name, email address, and user ID. Helios will use this information to message you when your election requires attention.</li>
-</ul>
-
-</div>
-
-</div>
-
+  <section class="aaep-info-section" id="actualizacions">
+    <h2>11. Actualizacións e información adicional</h2>
+    <p>Esta política poderá modificarse se cambian as consultas, a configuración técnica ou os tratamentos realizados. A data da última actualización indicarase ao comezo da páxina.</p>
+    <p>Para coñecer a actividade xeral da rede, os seus materiais e outros tratamentos de datos distintos da votación electrónica, consulta o <a href="https://asembleasensino.gal/aviso-legal/" target="_blank" rel="noopener noreferrer">aviso legal e de privacidade de AAEP</a>.</p>
+  </section>
+</main>
 {% endblock %}
