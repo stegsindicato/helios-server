@@ -26,6 +26,10 @@ from helios_auth import url_names
 from helios_auth.utils import format_recipient
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 STATUS_UPDATES = False
 CASE_INSENSITIVE_USER_ID = True
 LOGIN_MESSAGE = gettext_lazy("Corporate email")
@@ -39,316 +43,365 @@ OTP_HMAC_SALT = "helios-auth.edu-email-otp.v1"
 
 
 def _check_csrf(request):
-  # Lazy import avoids a circular dependency while auth_systems is being built.
-  from helios_auth.security import check_csrf
-  return check_csrf(request)
+    # Lazy import avoids a circular dependency while auth_systems is being built.
+    from helios_auth.security import check_csrf
+
+    return check_csrf(request)
 
 
 def _render_template(request, template_name, values=None):
-  # helios_auth.view_utils imports helios_auth.security, so keep it lazy too.
-  from helios_auth.view_utils import render_template
-  return render_template(request, template_name, values)
+    # helios_auth.view_utils imports helios_auth.security, so keep it lazy too.
+    from helios_auth.view_utils import render_template
+
+    return render_template(request, template_name, values)
 
 
 def _allowed_domain():
-  return settings.EDU_EMAIL_DOMAIN.lower().lstrip('@').rstrip('.')
+    return settings.EDU_EMAIL_DOMAIN.lower().lstrip("@").rstrip(".")
 
 
 def _normalize_email(email):
-  email = (email or '').strip().casefold()
-  local, sep, domain = email.rpartition('@')
-  domain = domain.rstrip('.')
+    email = (email or "").strip().casefold()
+    local, sep, domain = email.rpartition("@")
+    domain = domain.rstrip(".")
 
-  if not sep or not local or domain != _allowed_domain():
-    raise ValidationError(
-      gettext("Enter a valid @%(domain)s address.") % {
-        'domain': _allowed_domain(),
-      }
-    )
+    if not sep or not local or domain != _allowed_domain():
+        raise ValidationError(
+            gettext("Enter a valid @%(domain)s address.")
+            % {
+                "domain": _allowed_domain(),
+            }
+        )
 
-  return "%s@%s" % (local, _allowed_domain())
+    return "%s@%s" % (local, _allowed_domain())
 
 
 def _otp_digest(email, code):
-  return salted_hmac(
-    OTP_HMAC_SALT,
-    "%s:%s" % (email, code),
-    secret=settings.SECRET_KEY,
-    algorithm="sha256",
-  ).hexdigest()
+    return salted_hmac(
+        OTP_HMAC_SALT,
+        "%s:%s" % (email, code),
+        secret=settings.SECRET_KEY,
+        algorithm="sha256",
+    ).hexdigest()
 
 
 def _pending_expired(pending, now=None):
-  now = now if now is not None else time.time()
-  created_at = float(pending.get('created_at', 0))
-  return (now - created_at) > settings.EDU_EMAIL_OTP_MAX_AGE
+    now = now if now is not None else time.time()
+    created_at = float(pending.get("created_at", 0))
+    return (now - created_at) > settings.EDU_EMAIL_OTP_MAX_AGE
 
 
 class EmailForm(forms.Form):
-  email = forms.EmailField(label=gettext_lazy("Corporate email"), max_length=254)
+    email = forms.EmailField(label=gettext_lazy("Corporate email"), max_length=254)
 
-  def clean_email(self):
-    return _normalize_email(self.cleaned_data['email'])
+    def clean_email(self):
+        return _normalize_email(self.cleaned_data["email"])
 
 
 class OTPForm(forms.Form):
-  code = forms.RegexField(
-    regex=r'^\d{6}$',
-    label=gettext_lazy("Code"),
-    max_length=6,
-    min_length=6,
-    error_messages={
-      'invalid': gettext_lazy("Enter the 6-digit code."),
-    },
-  )
+    code = forms.RegexField(
+        regex=r"^\d{6}$",
+        label=gettext_lazy("Code"),
+        max_length=6,
+        min_length=6,
+        error_messages={
+            "invalid": gettext_lazy("Enter the 6-digit code."),
+        },
+    )
 
 
 def get_auth_url(request, redirect_url=None):
-  return reverse(LOGIN_URL_NAME)
+    return reverse(LOGIN_URL_NAME)
 
 
 def get_user_info_after_auth(request):
-  email = request.session.pop(USER_SESSION_KEY, None)
-  if not email:
-    return None
+    email = request.session.pop(USER_SESSION_KEY, None)
+    if not email:
+        return None
 
-  return {
-    'type': 'edu_email',
-    'user_id': email,
-    'name': email,
-    'info': {'email': email},
-    'token': None,
-  }
+    return {
+        "type": "edu_email",
+        "user_id": email,
+        "name": email,
+        "info": {"email": email},
+        "token": None,
+    }
 
 
 def do_logout(user):
-  return None
+    return None
 
 
 def update_status(token, message):
-  pass
+    pass
 
 
 def send_message(user_id, name, user_info, subject, body):
-  send_mail(
-    subject,
-    body,
-    settings.SERVER_EMAIL,
-    [format_recipient(name or user_id, user_id)],
-    fail_silently=False,
-  )
+    send_mail(
+        subject,
+        body,
+        settings.SERVER_EMAIL,
+        [format_recipient(name or user_id, user_id)],
+        fail_silently=False,
+    )
 
 
 def can_create_election(user_id, user_info):
-  # Voters authenticated here must not gain election-creation privileges.
-  return False
+    # Voters authenticated here must not gain election-creation privileges.
+    return False
 
 
 def _create_pending_vote_link(request, email):
-  """Create a server-side encrypted-ballot recovery link when voting."""
-  encrypted_vote = request.session.get('encrypted_vote')
-  if not encrypted_vote:
-    return None
-
-  try:
-    from helios import datatypes, utils
-    from helios.crypto import utils as cryptoutils
-    from helios.models import (
-      Election, PendingEmailVote, PENDING_EMAIL_VOTE_SESSION_KEY
-    )
-    from helios import url_names as helios_url_names
-
-    vote = datatypes.LDObject.fromDict(
-      utils.from_json(encrypted_vote), type_hint='legacy/EncryptedVote'
-    ).wrapped_obj
-    election = Election.get_by_uuid(vote.election_uuid)
-    if not election or not election.openreg:
-      return None
-
-    if election.eligibility:
-      allowed_systems = {item.get('auth_system') for item in election.eligibility}
-      if 'edu_email' not in allowed_systems:
+    """Create a server-side encrypted-ballot recovery link when voting."""
+    encrypted_vote = request.session.get("encrypted_vote")
+    if not encrypted_vote:
         return None
 
-    if (not election.voting_has_started()) or election.voting_has_stopped():
-      return None
+    try:
+        from helios import datatypes, utils
+        from helios.crypto import utils as cryptoutils
+        from helios.models import (
+            Election,
+            PendingEmailVote,
+            PENDING_EMAIL_VOTE_SESSION_KEY,
+        )
+        from helios import url_names as helios_url_names
 
-    now = datetime.datetime.utcnow()
-    # Superseded and expired links no longer need to retain the encrypted ballot.
-    PendingEmailVote.objects.filter(
-      expires_at__lt=now
-    ).exclude(encrypted_vote='').update(encrypted_vote='')
-    PendingEmailVote.objects.filter(
-      election=election,
-      email=email,
-      used_at__isnull=True,
-      invalidated_at__isnull=True,
-    ).update(invalidated_at=now, encrypted_vote='')
+        vote = datatypes.LDObject.fromDict(
+            utils.from_json(encrypted_vote), type_hint="legacy/EncryptedVote"
+        ).wrapped_obj
+        election = Election.get_by_uuid(vote.election_uuid)
+        if not election or not election.openreg:
+            return None
 
-    token = secrets.token_urlsafe(32)
-    pending = PendingEmailVote.objects.create(
-      election=election,
-      email=email,
-      encrypted_vote=encrypted_vote,
-      vote_hash=cryptoutils.hash_b64(encrypted_vote),
-      token_digest=PendingEmailVote.digest_token(token),
-      expires_at=now + datetime.timedelta(seconds=settings.EDU_EMAIL_LINK_MAX_AGE),
-    )
-    request.session[PENDING_EMAIL_VOTE_SESSION_KEY] = pending.id
+        if election.eligibility:
+            allowed_systems = {item.get("auth_system") for item in election.eligibility}
+            if "edu_email" not in allowed_systems:
+                return None
 
-    path = reverse(helios_url_names.PENDING_EMAIL_VOTE, args=[token])
-    return settings.SECURE_URL_HOST + path
-  except Exception:
-    # OTP authentication must keep working even if link creation cannot.
-    return None
+        if (not election.voting_has_started()) or election.voting_has_stopped():
+            return None
+
+        now = datetime.datetime.utcnow()
+        # Superseded and expired links no longer need to retain the encrypted ballot.
+        PendingEmailVote.objects.filter(expires_at__lt=now).exclude(
+            encrypted_vote=""
+        ).update(encrypted_vote="")
+        PendingEmailVote.objects.filter(
+            election=election,
+            email=email,
+            used_at__isnull=True,
+            invalidated_at__isnull=True,
+        ).update(invalidated_at=now, encrypted_vote="")
+
+        token = secrets.token_urlsafe(32)
+        pending = PendingEmailVote.objects.create(
+            election=election,
+            email=email,
+            encrypted_vote=encrypted_vote,
+            vote_hash=cryptoutils.hash_b64(encrypted_vote),
+            token_digest=PendingEmailVote.digest_token(token),
+            expires_at=now
+            + datetime.timedelta(seconds=settings.EDU_EMAIL_LINK_MAX_AGE),
+        )
+        request.session[PENDING_EMAIL_VOTE_SESSION_KEY] = pending.id
+
+        path = reverse(helios_url_names.PENDING_EMAIL_VOTE, args=[token])
+        return settings.SECURE_URL_HOST + path
+    except Exception:
+        # OTP authentication must keep working even if link creation cannot.
+        logger.exception("Could not create pending edu_email vote recovery link")
+        return None
 
 
 def login_view(request):
-  # Direct visits should also work, not only /auth/start/edu_email.
-  request.session['auth_system_name'] = 'edu_email'
-  request.session.setdefault('auth_return_url', '/')
+    # Direct visits should also work, not only /auth/start/edu_email.
+    request.session["auth_system_name"] = "edu_email"
+    request.session.setdefault("auth_return_url", "/")
 
-  if request.method == 'GET':
-    return _render_template(request, 'edu_email/login', {
-      'form': EmailForm(),
-      'domain': _allowed_domain(),
-    })
+    if request.method == "GET":
+        return _render_template(
+            request,
+            "edu_email/login",
+            {
+                "form": EmailForm(),
+                "domain": _allowed_domain(),
+            },
+        )
 
-  _check_csrf(request)
-  form = EmailForm(request.POST)
-  if not form.is_valid():
-    return _render_template(request, 'edu_email/login', {
-      'form': form,
-      'domain': _allowed_domain(),
-    })
+    _check_csrf(request)
+    form = EmailForm(request.POST)
+    if not form.is_valid():
+        return _render_template(
+            request,
+            "edu_email/login",
+            {
+                "form": form,
+                "domain": _allowed_domain(),
+            },
+        )
 
-  now = time.time()
-  previous = request.session.get(PENDING_SESSION_KEY)
-  if previous:
-    last_sent = float(previous.get('created_at', 0))
-    if (now - last_sent) < settings.EDU_EMAIL_OTP_RESEND_SECONDS:
-      return _render_template(request, 'edu_email/verify', {
-        'form': OTPForm(),
-        'domain': _allowed_domain(),
-        'error': gettext("A code was sent recently. Check your email before requesting another one."),
-      })
+    now = time.time()
+    previous = request.session.get(PENDING_SESSION_KEY)
+    if previous:
+        last_sent = float(previous.get("created_at", 0))
+        if (now - last_sent) < settings.EDU_EMAIL_OTP_RESEND_SECONDS:
+            return _render_template(
+                request,
+                "edu_email/verify",
+                {
+                    "form": OTPForm(),
+                    "domain": _allowed_domain(),
+                    "error": gettext(
+                        "A code was sent recently. Check your email before requesting another one."
+                    ),
+                },
+            )
 
-  email = form.cleaned_data['email']
-  code = "%06d" % secrets.randbelow(1000000)
+    email = form.cleaned_data["email"]
+    code = "%06d" % secrets.randbelow(1000000)
 
-  request.session[PENDING_SESSION_KEY] = {
-    'email': email,
-    'code_digest': _otp_digest(email, code),
-    'created_at': now,
-    'attempts': 0,
-  }
-
-  continue_url = _create_pending_vote_link(request, email)
-  minutes = max(1, settings.EDU_EMAIL_OTP_MAX_AGE // 60)
-  body = gettext(
-    "Hello,\n\n"
-    "Your code to access the election is:\n\n"
-    "%(code)s\n\n"
-    "The code expires in %(minutes)d minutes.\n\n"
-    "If you did not request this code, you can ignore this message.\n\n"
-    "--\n%(site_title)s\n"
-  ) % {
-    'code': code,
-    'minutes': minutes,
-    'site_title': settings.SITE_TITLE,
-  }
-
-  if continue_url:
-    link_minutes = max(1, settings.EDU_EMAIL_LINK_MAX_AGE // 60)
-    body += gettext(
-      "\nIf you closed the voting page, you can recover your encrypted ballot using this link:\n"
-      "%(continue_url)s\n\n"
-      "Opening the link does not cast your vote. You will be asked to confirm it. "
-      "The link expires in %(minutes)d minutes and can only be used once. "
-      "Do not forward this link to anyone.\n"
-    ) % {
-      'continue_url': continue_url,
-      'minutes': link_minutes,
+    request.session[PENDING_SESSION_KEY] = {
+        "email": email,
+        "code_digest": _otp_digest(email, code),
+        "created_at": now,
+        "attempts": 0,
     }
 
-  try:
-    send_mail(
-      gettext(settings.EDU_EMAIL_SUBJECT),
-      body,
-      settings.SERVER_EMAIL,
-      [email],
-      fail_silently=False,
-    )
-  except Exception:
-    # Do not log the recipient or OTP. Let the user retry.
-    request.session.pop(PENDING_SESSION_KEY, None)
-    return _render_template(request, 'edu_email/login', {
-      'form': EmailForm(initial={'email': email}),
-      'domain': _allowed_domain(),
-      'error': gettext("We could not send the email. Please try again later."),
-    })
+    continue_url = _create_pending_vote_link(request, email)
+    minutes = max(1, settings.EDU_EMAIL_OTP_MAX_AGE // 60)
+    body = gettext(
+        "Hello,\n\n"
+        "Your code to access the election is:\n\n"
+        "%(code)s\n\n"
+        "The code expires in %(minutes)d minutes.\n\n"
+        "If you did not request this code, you can ignore this message.\n\n"
+        "--\n%(site_title)s\n"
+    ) % {
+        "code": code,
+        "minutes": minutes,
+        "site_title": settings.SITE_TITLE,
+    }
 
-  return HttpResponseRedirect(reverse(VERIFY_URL_NAME))
+    if continue_url:
+        link_minutes = max(1, settings.EDU_EMAIL_LINK_MAX_AGE // 60)
+        body += gettext(
+            "\nIf you closed the voting page, you can recover your encrypted ballot using this link:\n"
+            "%(continue_url)s\n\n"
+            "Opening the link does not cast your vote. You will be asked to confirm it. "
+            "The link expires in %(minutes)d minutes and can only be used once. "
+            "Do not forward this link to anyone.\n"
+        ) % {
+            "continue_url": continue_url,
+            "minutes": link_minutes,
+        }
+
+    try:
+        send_mail(
+            gettext(settings.EDU_EMAIL_SUBJECT),
+            body,
+            settings.SERVER_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+    except Exception:
+        # Do not log the recipient or OTP. Let the user retry.
+        request.session.pop(PENDING_SESSION_KEY, None)
+        return _render_template(
+            request,
+            "edu_email/login",
+            {
+                "form": EmailForm(initial={"email": email}),
+                "domain": _allowed_domain(),
+                "error": gettext(
+                    "We could not send the email. Please try again later."
+                ),
+            },
+        )
+
+    return HttpResponseRedirect(reverse(VERIFY_URL_NAME))
 
 
 def verify_view(request):
-  pending = request.session.get(PENDING_SESSION_KEY)
-  if not pending:
-    return HttpResponseRedirect(reverse(LOGIN_URL_NAME))
+    pending = request.session.get(PENDING_SESSION_KEY)
+    if not pending:
+        return HttpResponseRedirect(reverse(LOGIN_URL_NAME))
 
-  if _pending_expired(pending):
+    if _pending_expired(pending):
+        request.session.pop(PENDING_SESSION_KEY, None)
+        return _render_template(
+            request,
+            "edu_email/login",
+            {
+                "form": EmailForm(),
+                "domain": _allowed_domain(),
+                "error": gettext("The code has expired. Request a new one."),
+            },
+        )
+
+    if request.method == "GET":
+        return _render_template(
+            request,
+            "edu_email/verify",
+            {
+                "form": OTPForm(),
+                "domain": _allowed_domain(),
+            },
+        )
+
+    _check_csrf(request)
+    form = OTPForm(request.POST)
+    if not form.is_valid():
+        return _render_template(
+            request,
+            "edu_email/verify",
+            {
+                "form": form,
+                "domain": _allowed_domain(),
+            },
+        )
+
+    attempts = int(pending.get("attempts", 0)) + 1
+    pending["attempts"] = attempts
+    request.session[PENDING_SESSION_KEY] = pending
+
+    expected = pending.get("code_digest", "")
+    supplied = _otp_digest(pending["email"], form.cleaned_data["code"])
+
+    if not constant_time_compare(expected, supplied):
+        if attempts >= settings.EDU_EMAIL_OTP_MAX_ATTEMPTS:
+            request.session.pop(PENDING_SESSION_KEY, None)
+            return _render_template(
+                request,
+                "edu_email/login",
+                {
+                    "form": EmailForm(),
+                    "domain": _allowed_domain(),
+                    "error": gettext(
+                        "The maximum number of attempts has been exceeded. Request a new code."
+                    ),
+                },
+            )
+
+        return _render_template(
+            request,
+            "edu_email/verify",
+            {
+                "form": OTPForm(),
+                "domain": _allowed_domain(),
+                "error": gettext("Incorrect code."),
+            },
+        )
+
+    email = pending["email"]
     request.session.pop(PENDING_SESSION_KEY, None)
-    return _render_template(request, 'edu_email/login', {
-      'form': EmailForm(),
-      'domain': _allowed_domain(),
-      'error': gettext("The code has expired. Request a new one."),
-    })
+    request.session[USER_SESSION_KEY] = email
+    request.session["auth_system_name"] = "edu_email"
 
-  if request.method == 'GET':
-    return _render_template(request, 'edu_email/verify', {
-      'form': OTPForm(),
-      'domain': _allowed_domain(),
-    })
-
-  _check_csrf(request)
-  form = OTPForm(request.POST)
-  if not form.is_valid():
-    return _render_template(request, 'edu_email/verify', {
-      'form': form,
-      'domain': _allowed_domain(),
-    })
-
-  attempts = int(pending.get('attempts', 0)) + 1
-  pending['attempts'] = attempts
-  request.session[PENDING_SESSION_KEY] = pending
-
-  expected = pending.get('code_digest', '')
-  supplied = _otp_digest(pending['email'], form.cleaned_data['code'])
-
-  if not constant_time_compare(expected, supplied):
-    if attempts >= settings.EDU_EMAIL_OTP_MAX_ATTEMPTS:
-      request.session.pop(PENDING_SESSION_KEY, None)
-      return _render_template(request, 'edu_email/login', {
-        'form': EmailForm(),
-        'domain': _allowed_domain(),
-        'error': gettext("The maximum number of attempts has been exceeded. Request a new code."),
-      })
-
-    return _render_template(request, 'edu_email/verify', {
-      'form': OTPForm(),
-      'domain': _allowed_domain(),
-      'error': gettext("Incorrect code."),
-    })
-
-  email = pending['email']
-  request.session.pop(PENDING_SESSION_KEY, None)
-  request.session[USER_SESSION_KEY] = email
-  request.session['auth_system_name'] = 'edu_email'
-
-  return HttpResponseRedirect(reverse(url_names.AUTH_AFTER))
+    return HttpResponseRedirect(reverse(url_names.AUTH_AFTER))
 
 
 urlpatterns = [
-  re_path(r'^edu_email/login$', login_view, name=LOGIN_URL_NAME),
-  re_path(r'^edu_email/verify$', verify_view, name=VERIFY_URL_NAME),
+    re_path(r"^edu_email/login$", login_view, name=LOGIN_URL_NAME),
+    re_path(r"^edu_email/verify$", verify_view, name=VERIFY_URL_NAME),
 ]
