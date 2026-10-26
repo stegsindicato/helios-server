@@ -269,22 +269,22 @@ def login_view(request):
     }
 
     continue_url = _create_pending_vote_link(request, email)
+
     minutes = max(1, settings.EDU_EMAIL_OTP_MAX_AGE // 60)
+
     body = gettext(
         "Hello,\n\n"
         "Your code to access the election is:\n\n"
         "%(code)s\n\n"
-        "The code expires in %(minutes)d minutes.\n\n"
-        "If you did not request this code, you can ignore this message.\n\n"
-        "--\n%(site_title)s\n"
+        "The code expires in %(minutes)d minutes.\n"
     ) % {
         "code": code,
         "minutes": minutes,
-        "site_title": settings.SITE_TITLE,
     }
 
     if continue_url:
         link_minutes = max(1, settings.EDU_EMAIL_LINK_MAX_AGE // 60)
+
         body += gettext(
             "\nIf you closed the voting page, you can recover your encrypted ballot using this link:\n"
             "%(continue_url)s\n\n"
@@ -295,6 +295,13 @@ def login_view(request):
             "continue_url": continue_url,
             "minutes": link_minutes,
         }
+
+    body += gettext(
+        "\nIf you did not request this code, you can ignore this message.\n"
+        "\n--\n%(site_title)s\n"
+    ) % {
+        "site_title": settings.SITE_TITLE,
+    }
 
     try:
         send_mail(
