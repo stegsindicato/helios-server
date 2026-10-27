@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 STATUS_UPDATES = False
 CASE_INSENSITIVE_USER_ID = True
 LOGIN_MESSAGE = gettext_lazy("Corporate email")
+ELIGIBILITY_MESSAGE = gettext_lazy("People with a verified institutional email address")
 
 LOGIN_URL_NAME = "auth@edu_email@login"
 VERIFY_URL_NAME = "auth@edu_email@verify"

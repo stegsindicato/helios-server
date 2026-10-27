@@ -380,7 +380,17 @@ class Election(HeliosModel):
           for one_constraint in constraint['constraint']:
             return_val += "<li>%s</li>" % AUTH_SYSTEMS[constraint['auth_system']].pretty_eligibility(one_constraint)
         else:
-          return_val += "<li> any %s user</li>" % constraint['auth_system']
+          auth_system = AUTH_SYSTEMS[constraint['auth_system']]
+          eligibility_message = getattr(auth_system, 'ELIGIBILITY_MESSAGE', None)
+
+          if eligibility_message:
+            return_val += "<li>%s</li>" % eligibility_message
+          else:
+            return_val += "<li>%s</li>" % (
+              gettext("Any %(auth_system)s user") % {
+                'auth_system': constraint['auth_system'],
+              }
+            )
 
       return_val += "</ul>"
 
