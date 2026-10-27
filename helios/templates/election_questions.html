@@ -3,7 +3,11 @@
 
 {% block title %}{% blocktrans with election_name=election.name %}Questions for {{ election_name }}{% endblocktrans %}{% endblock %}
 {% block content %}
-  <h3 class="title">{% blocktrans with election_name=election.name %}{{ election_name }} &mdash; Questions{% endblocktrans %} <span style="font-size:0.7em;">[<a href="{% url "election@view" election.uuid %}">{% trans "Back to election" %}</a>]</span></h3>
+  <section class="election-subpage-hero">
+    <a class="election-subpage-back" href="{% url "election@view" election.uuid %}">← {% trans "Back to election" %}</a>
+    <span class="section-kicker">{% trans "Questions" %}</span>
+    <h1>{{ election.name }}</h1>
+  </section>
 
   {% trans "The questions could not be saved. Please check that the URLs you entered are either http:// or https://" as questions_save_error %}
   {% trans "Please enter at least one answer option." as at_least_one_answer %}
@@ -290,8 +294,10 @@
 
   </script>
 
-  <div id="questions">
-  </div>
+  <section class="questions-page">
+    <div id="questions">
+    </div>
+  </section>
 
 			<!-- end #content -->
 {% endblock %}

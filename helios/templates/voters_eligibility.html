@@ -2,11 +2,32 @@
 {% load i18n %}
 {% block title %}{% blocktrans with election_name=election.name %}Voter eligibility for {{ election_name }}{% endblocktrans %}{% endblock %}
 {% block content %}
-<h2 class="title">{% blocktrans with election_name=election.name %}{{ election_name }} &mdash; Voter eligibility{% endblocktrans %} <span style="font-size:0.7em;">[<a href="{% url "election@voters@list-pretty" election.uuid %}">{% trans "Back to voters" %}</a>]</span></h2>
-<p><em>{{election.pretty_eligibility|safe}}</em></p>
-<p>{% blocktrans with auth_type=user.user_type %}You may limit voter eligibility to one of these categories, as defined by {{ auth_type }}:{% endblocktrans %}</p>
-<form method="post" action=""><input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-<select name="category_id"><option value="" SELECTED>{% trans "No constraint" %}</option>{% for category in categories %}<option value="{{category.id}}">{{category.name}}</option>{% endfor %}</select>
-<input class="button" type="submit" value="{% trans 'Set eligibility' %}" />
-</form>
+<section class="election-subpage-hero election-subpage-hero-compact">
+  <a class="election-subpage-back" href="{% url "election@voters@list-pretty" election.uuid %}">← {% trans "Back to voters" %}</a>
+  <span class="section-kicker">{% trans "Voter eligibility" %}</span>
+  <h1>{{ election.name }}</h1>
+</section>
+
+<section class="subpage-form-card">
+  <div class="subpage-current-setting">
+    <span class="subpage-form-label">{% trans "Current eligibility" %}</span>
+    <div>{{election.pretty_eligibility|safe}}</div>
+  </div>
+
+  <p>{% blocktrans with auth_type=user.user_type %}You may limit voter eligibility to one of these categories, as defined by {{ auth_type }}:{% endblocktrans %}</p>
+
+  <form method="post" action="">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
+    <div class="subpage-form-group">
+      <label for="eligibility-category">{% trans "Eligibility category" %}</label>
+      <select id="eligibility-category" name="category_id">
+        <option value="" SELECTED>{% trans "No constraint" %}</option>
+        {% for category in categories %}<option value="{{category.id}}">{{category.name}}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="subpage-form-actions">
+      <input class="button aaep-primary-button" type="submit" value="{% trans 'Set eligibility' %}" />
+    </div>
+  </form>
+</section>
 {% endblock %}

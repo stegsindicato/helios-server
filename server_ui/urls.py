@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+  # -*- coding: utf-8 -*-
 from django.urls import path
 
 from .views import home, about, docs, faq, help, privacy
