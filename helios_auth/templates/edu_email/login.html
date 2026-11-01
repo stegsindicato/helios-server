@@ -12,6 +12,9 @@
 {% blocktrans %}We will send a six-digit code to your email. Your identity is used to ensure one voter per person; it is not published or included in the ballot contents.{% endblocktrans %}
 </p>
 
+<p><strong>{% trans "Email delivery may take up to half an hour." %}</strong></p>
+<p>{% trans "Please wait for the message before trying again. The six-digit code is valid for 1 hour. If you have prepared a ballot, the email will also include a recovery link valid for 24 hours, provided voting is still open." %}</p>
+
 {% if error %}
 <p style="color: #b00020;"><strong>{{error}}</strong></p>
 {% endif %}

@@ -8,6 +8,8 @@
 {% blocktrans with domain=domain %}We sent a six-digit code to the <strong>@{{ domain }}</strong> email address you provided. You can check your email on another device and enter the code here.{% endblocktrans %}
 </p>
 
+<p>{% trans "Institutional email delivery may take up to half an hour. The code remains valid for 1 hour. If your message includes a recovery link, you can use it for up to 24 hours even after closing this page, provided voting is still open." %}</p>
+
 {% if error %}
 <p style="color: #b00020;"><strong>{{error}}</strong></p>
 {% endif %}
@@ -23,5 +25,4 @@
   <input class="button" type="submit" value="{% trans 'Verify and continue' %}" />
 </form>
 
-<p><a href="{% url 'auth@edu_email@login' %}">{% trans "Request another code" %}</a></p>
 {% endblock %}

@@ -22,6 +22,18 @@ msgstr ""
 msgid "Short name"
 msgstr "Nome curto"
 
+#: helios_auth/templates/edu_email/login.html
+msgid "Email delivery may take up to half an hour."
+msgstr "O correo pode chegar a tardar media hora en chegar."
+
+#: helios_auth/templates/edu_email/login.html
+msgid "Please wait for the message before trying again. The six-digit code is valid for 1 hour. If you have prepared a ballot, the email will also include a recovery link valid for 24 hours, provided voting is still open."
+msgstr "Agarda a recibir a mensaxe antes de intentalo de novo. O código de seis cifras é válido durante 1 hora. Se xa preparaches unha papeleta, o correo tamén incluirá unha ligazón para recuperala, válida durante 24 horas sempre que a votación continúe aberta."
+
+#: helios_auth/templates/edu_email/verify.html
+msgid "Institutional email delivery may take up to half an hour. The code remains valid for 1 hour. If your message includes a recovery link, you can use it for up to 24 hours even after closing this page, provided voting is still open."
+msgstr "O correo institucional pode chegar a tardar media hora en chegar. O código segue sendo válido durante 1 hora. Se a mensaxe inclúe unha ligazón de recuperación, poderás usala durante un máximo de 24 horas, mesmo despois de pechar esta páxina, sempre que a votación continúe aberta."
+
 #: helios/forms.py:17
 msgid "No spaces; this will be part of the election URL, e.g. my-club-2010."
 msgstr "Sen espazos; formará parte do URL da elección, por exemplo, meu-club-2010."
