@@ -24,8 +24,120 @@
 </iframe>
 {% endif %}
 
+{% url "shortcut@election" election.short_name as public_election_url %}
+{% blocktrans trimmed with election_name=election.name asvar share_message %}
+I have taken part in "{{ election_name }}". Take part too and make your voice heard.
+{% endblocktrans %}
+{% trans "Link copied." as copied_message %}
+{% trans "The link could not be copied. Please copy it from your browser." as copy_error_message %}
+
+<section
+  id="vote-share"
+  class="vote-share-panel"
+  data-share-url="{{ public_election_url }}"
+  data-share-title="{{ election.name|escape }}"
+  data-share-text="{{ share_message|escape }}"
+  data-copy-success="{{ copied_message|escape }}"
+  data-copy-error="{{ copy_error_message|escape }}">
+
+  <span class="section-kicker">{% trans "Share" %}</span>
+  <h2>{% trans "You have taken part. Help us broaden participation." %}</h2>
+  <p class="vote-share-explanation">
+    {% trans "You can share that you took part in this consultation. Nothing you share includes your vote choices or your ballot tracker." %}
+  </p>
+
+  <div class="vote-share-actions">
+    <button type="button" id="vote-share-native" class="vote-share-button vote-share-primary" hidden>
+      {% trans "Share that I took part" %}
+    </button>
+
+    <a id="vote-share-x"
+       class="vote-share-button vote-share-secondary"
+       href="#"
+       target="_blank"
+       rel="noopener noreferrer">
+      {% trans "Share on X" %}
+    </a>
+
+    <button type="button" id="vote-share-copy" class="vote-share-button vote-share-secondary">
+      {% trans "Copy link" %}
+    </button>
+  </div>
+
+  <p id="vote-share-status" class="vote-share-status" role="status" aria-live="polite"></p>
+</section>
+
 <p style="font-size: 1.4em;">
 [ <a href="{% url "election@view" election.uuid %}">{% trans "return to election info" %}</a> ]
 </p>
+
+<script>
+(function() {
+  var panel = document.getElementById('vote-share');
+  if (!panel) {
+    return;
+  }
+
+  var shareUrl = new URL(panel.getAttribute('data-share-url'), window.location.href).href;
+  var shareTitle = panel.getAttribute('data-share-title') || document.title;
+  var shareText = panel.getAttribute('data-share-text') || '';
+  var status = document.getElementById('vote-share-status');
+  var nativeButton = document.getElementById('vote-share-native');
+  var xLink = document.getElementById('vote-share-x');
+  var copyButton = document.getElementById('vote-share-copy');
+
+  xLink.href = 'https://x.com/share?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(shareUrl);
+
+  if (navigator.share) {
+    nativeButton.hidden = false;
+    nativeButton.addEventListener('click', function() {
+      navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: shareUrl
+      }).catch(function(error) {
+        if (error && error.name !== 'AbortError') {
+          status.textContent = panel.getAttribute('data-copy-error');
+        }
+      });
+    });
+  }
+
+  copyButton.addEventListener('click', function() {
+    var copySucceeded = function() {
+      status.textContent = panel.getAttribute('data-copy-success');
+    };
+
+    var copyFailed = function() {
+      status.textContent = panel.getAttribute('data-copy-error');
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(shareUrl).then(copySucceeded).catch(copyFailed);
+      return;
+    }
+
+    var textarea = document.createElement('textarea');
+    textarea.value = shareUrl;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+      if (document.execCommand('copy')) {
+        copySucceeded();
+      } else {
+        copyFailed();
+      }
+    } catch (error) {
+      copyFailed();
+    }
+
+    document.body.removeChild(textarea);
+  });
+})();
+</script>
 
 {% endblock %}

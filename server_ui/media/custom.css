@@ -1884,3 +1884,108 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================================
+   Vote confirmation: share participation
+   ========================================================= */
+
+.vote-share-panel {
+    max-width: 760px;
+    margin: 3.5rem auto 2.5rem;
+    padding: 2.5rem 0;
+    text-align: center;
+    border-top: 1px solid #d9d9d5;
+    border-bottom: 1px solid #d9d9d5;
+}
+
+.vote-share-panel h2 {
+    max-width: 620px;
+    margin: .4rem auto .9rem;
+    color: #171717;
+    font-size: 2rem;
+    line-height: 1.1;
+    letter-spacing: -.03em;
+}
+
+.vote-share-explanation {
+    max-width: 610px;
+    margin: 0 auto 1.6rem;
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.vote-share-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .7rem;
+}
+
+.vote-share-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    margin: 0;
+    padding: .8rem 1.25rem;
+    border: 1px solid #c9c8c3;
+    border-radius: 2px;
+    background: #fff;
+    color: #171717;
+    font-family: inherit;
+    font-size: .92rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, transform .15s ease;
+}
+
+.vote-share-button:hover,
+.vote-share-button:focus {
+    background: #f3f2ee;
+    color: #171717;
+    text-decoration: none;
+}
+
+.vote-share-primary {
+    border-color: #b35335;
+    background: #b35335;
+    color: #fff;
+}
+
+.vote-share-primary:hover,
+.vote-share-primary:focus {
+    border-color: #93442c;
+    background: #93442c;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.vote-share-status {
+    min-height: 1.4em;
+    margin: .9rem 0 0;
+    color: #666;
+    font-size: .85rem;
+}
+
+@media only screen and (max-width: 40em) {
+    .vote-share-panel {
+        margin: 2.5rem auto 2rem;
+        padding: 2rem 0;
+    }
+
+    .vote-share-panel h2 {
+        font-size: 1.65rem;
+    }
+
+    .vote-share-actions {
+        display: block;
+    }
+
+    .vote-share-button {
+        width: 100%;
+        margin-bottom: .65rem;
+    }
+}
