@@ -48,7 +48,7 @@ If you are not sure what that means, we strongly recommend clicking Cancel and l
       <div>
         <span class="trustee-number">{% blocktrans with number=forloop.counter %}Trustee {{ number }}{% endblocktrans %}</span>
         <h2>{{ t.name }}</h2>
-        {% if not t.secret_key and t.email %}<p class="trustee-email">{{ t.email }}</p>{% endif %}
+        {% if admin_p and not t.secret_key and t.email %}<p class="trustee-email">{{ t.email }}</p>{% endif %}
       </div>
 
       {% if admin_p %}
