@@ -145,6 +145,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # onclick handlers, and jQuery JSON eval usage. Future improvement: use nonces.
 
 CSP_DEFAULT_SRC = ("'self'",)
+# Allow the AAEP help video when the visitor explicitly chooses to load it.
+CSP_FRAME_SRC = ("'self'", "https://www.youtube-nocookie.com")
 CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'")
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = ("'self'", "data:")
