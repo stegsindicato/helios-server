@@ -1,5 +1,4 @@
 services:
-
   # ============================================================
   # PostgreSQL
   # ============================================================
@@ -12,6 +11,8 @@ services:
       POSTGRES_DB: helios
       POSTGRES_USER: helios
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    cpu_shares: 2048
 
     volumes:
       - /srv/helios/postgres:/var/lib/postgresql/data
@@ -28,7 +29,6 @@ services:
     networks:
       - helios-internal
 
-
   # ============================================================
   # RabbitMQ / Celery
   # ============================================================
@@ -40,6 +40,8 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: helios
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+
+    cpu_shares: 1024
 
     volumes:
       - /srv/helios/rabbitmq:/var/lib/rabbitmq
@@ -58,7 +60,6 @@ services:
     networks:
       - helios-internal
 
-
   # ============================================================
   # Migraciones Django
   # ============================================================
@@ -72,7 +73,6 @@ services:
         condition: service_healthy
 
     environment: &helios-env
-
       # --------------------------------------------------------
       # Django / Helios
       # --------------------------------------------------------
@@ -90,7 +90,6 @@ services:
       URL_HOST: https://${HELIOS_HOST}
       SECURE_URL_HOST: https://${HELIOS_HOST}
 
-
       # --------------------------------------------------------
       # Identidad / localización
       # --------------------------------------------------------
@@ -102,7 +101,6 @@ services:
       TIME_ZONE: Europe/Madrid
 
       HELP_EMAIL_ADDRESS: ${HELP_EMAIL}
-
 
       # --------------------------------------------------------
       # Comportamiento Helios
@@ -116,7 +114,6 @@ services:
       HELIOS_VOTER_EMAIL_CUTOFF_WEEKS: "3"
 
       SESSION_COOKIE_SAMESITE: Lax
-
 
       # --------------------------------------------------------
       # Autenticación
@@ -136,7 +133,6 @@ services:
 
       STORE_CAST_IP: "0"
 
-
       # --------------------------------------------------------
       # PostgreSQL
       # --------------------------------------------------------
@@ -148,13 +144,11 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
       PGSSLMODE: disable
 
-
       # --------------------------------------------------------
       # Celery / RabbitMQ
       # --------------------------------------------------------
 
       CELERY_BROKER_URL: amqp://helios:${RABBITMQ_PASSWORD}@rabbitmq:5672//
-
 
       # --------------------------------------------------------
       # SMTP
@@ -169,7 +163,6 @@ services:
       DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
       DEFAULT_FROM_NAME: ${DEFAULT_FROM_NAME}
 
-
     command:
       - /bin/sh
       - -c
@@ -179,7 +172,6 @@ services:
     networks:
       - helios-internal
 
-
   # ============================================================
   # Helios Web
   # ============================================================
@@ -187,6 +179,7 @@ services:
   web:
     image: ghcr.io/stegsindicato/helios-server:main
     restart: unless-stopped
+    cpu_shares: 4096
 
     depends_on:
       db:
@@ -232,7 +225,6 @@ services:
     networks:
       - helios-internal
 
-
   # ============================================================
   # Celery Worker
   # ============================================================
@@ -240,6 +232,7 @@ services:
   worker:
     image: ghcr.io/stegsindicato/helios-server:main
     restart: unless-stopped
+    cpu_shares: 2048
 
     depends_on:
       db:
@@ -271,12 +264,10 @@ services:
     networks:
       - helios-internal
 
-
 # ==============================================================
 # Redes
 # ==============================================================
 
 networks:
-
   helios-internal:
     driver: bridge
