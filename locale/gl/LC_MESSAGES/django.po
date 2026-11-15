@@ -458,73 +458,83 @@ msgstr "Iniciar sesión"
 msgid "Confirm Vote"
 msgstr "Confirmar o voto"
 
-#: helios/templates/cast_done.html:6
-#, python-format
-msgid "%(election_name)s &mdash; Vote Successfully Cast!"
-msgstr "%(election_name)s &mdash; Voto emitido correctamente!"
+#: helios/templates/cast_done.html:10
+msgid "Vote cast"
+msgstr "Voto emitido"
 
-#: helios/templates/cast_done.html:10 helios/templates/election_cast_confirm.html:47
-#: server_ui/templates/email/cast_vote_body.txt:5
-msgid "Your ballot tracker is:"
-msgstr "O código de seguimento da túa papeleta é:"
+#: helios/templates/cast_done.html:11
+msgid "Your vote has been successfully cast"
+msgstr "O teu voto foi emitido correctamente"
 
-#: helios/templates/cast_done.html:15
+#: helios/templates/cast_done.html:14
+msgid "Your encrypted ballot has been received correctly and will be included in the tally."
+msgstr "A túa papeleta cifrada recibiuse correctamente e incluirase no escrutinio."
+
+#: helios/templates/cast_done.html:20
+msgid "Ballot tracker"
+msgstr "Código de seguimento"
+
+#: helios/templates/cast_done.html:21
+msgid "Keep your tracking code"
+msgstr "Garda o teu código de seguimento"
+
+#: helios/templates/cast_done.html:30
 #, python-format
 msgid ""
-"This ballot tracker mathematically ensures that your ballot is counted. You can check all ballot trackers by viewing "
-"the <a href=\"%(voter_list_url)s\">voter list</a>, where your ballot tracker should appear within a few minutes."
+"This ballot tracker mathematically ensures that your ballot is counted. You can check all ballot trackers in the <a "
+"href=\"%(voter_list_url)s\">ballot tracking center</a>, where your tracker should appear within a few minutes."
 msgstr ""
-"Este código de seguimento garante matematicamente que a túa papeleta se contabiliza. Podes consultar todos os códigos"
-" de seguimento na <a href=\"%(voter_list_url)s\">lista de votantes</a>, onde o teu debería aparecer nuns minutos."
+"Este código de seguimento garante matematicamente que a túa papeleta se contabiliza. Podes consultar todos os códigos "
+"no <a href=\"%(voter_list_url)s\">centro de seguimento de papeletas</a>, onde o teu debería aparecer nuns minutos."
 
-#: helios/templates/cast_done.html:22
+#: helios/templates/cast_done.html:38
 msgid "For your safety, we have logged you out."
 msgstr "Pola túa seguridade, pechamos a túa sesión."
 
-#: helios/templates/cast_done.html:28
+#: helios/templates/cast_done.html:47
 #, python-format
-msgid "I have taken part in \"%(election_name)s\". Take part too and make your voice heard."
-msgstr "Participei en «%(election_name)s». Participa ti tamén e fai oír a túa voz."
+msgid "I have just voted in \"%(election_name)s\". Take part too and make your voice heard."
+msgstr "Acabo de votar en «%(election_name)s». Participa ti tamén e fai valer a túa voz."
 
-#: helios/templates/cast_done.html:31
+#: helios/templates/cast_done.html:50
 msgid "Link copied."
 msgstr "Ligazón copiada."
 
-#: helios/templates/cast_done.html:32
+#: helios/templates/cast_done.html:51
 msgid "The link could not be copied. Please copy it from your browser."
 msgstr "Non se puido copiar a ligazón. Cópiaa desde o navegador."
 
-#: helios/templates/cast_done.html:43
+#: helios/templates/cast_done.html:62
 msgid "Share"
 msgstr "Compartir"
 
-#: helios/templates/cast_done.html:44
-msgid "You have taken part. Help us broaden participation."
-msgstr "Xa participaches. Axúdanos a ampliar a participación."
+#: helios/templates/cast_done.html:63
+msgid "You have voted. Encourage others to take part."
+msgstr "Xa votaches. Anima a máis persoas a participar."
 
-#: helios/templates/cast_done.html:46
+#: helios/templates/cast_done.html:65
 msgid ""
-"You can share that you took part in this consultation. Nothing you share includes your vote choices or your ballot "
-"tracker."
+"Share that you voted and help this consultation reach more people. Nothing you share includes your vote choices or "
+"your ballot tracker."
 msgstr ""
-"Podes compartir que participaches nesta consulta. Nada do que compartas inclúe as opcións do teu voto nin o código de"
-" seguimento da túa papeleta."
+"Comparte que votaches e axuda a que esta consulta chegue a máis persoas. Nada do que compartas inclúe as opcións do "
+"teu voto nin o código de seguimento da túa papeleta."
 
-#: helios/templates/cast_done.html:51
-msgid "Share that I took part"
-msgstr "Compartir que participei"
+#: helios/templates/cast_done.html:70
+msgid "Share that I voted"
+msgstr "Compartir que votei"
 
-#: helios/templates/cast_done.html:59
+#: helios/templates/cast_done.html:78
 msgid "Share on X"
 msgstr "Compartir en X"
 
 # | msgid "Copy"
-#: helios/templates/cast_done.html:63
+#: helios/templates/cast_done.html:82
 msgid "Copy link"
 msgstr "Copiar ligazón"
 
-#: helios/templates/cast_done.html:71
-msgid "return to election info"
+#: helios/templates/cast_done.html:91
+msgid "Return to election info"
 msgstr "Volver á información da elección"
 
 #: helios/templates/castvote.html:6

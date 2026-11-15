@@ -1989,3 +1989,179 @@
         margin-bottom: .65rem;
     }
 }
+
+/* =========================================================
+   Vote confirmation: AAEP final screen
+   ========================================================= */
+
+.vote-confirmation-page {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 3rem 0 1rem;
+}
+
+.vote-confirmation-hero {
+    max-width: 820px;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid #d9d9d5;
+}
+
+.vote-confirmation-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: 1rem;
+    color: #b35335;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.vote-confirmation-kicker::before {
+    content: "✓";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border: 1px solid #b35335;
+    border-radius: 50%;
+    font-size: .85rem;
+    line-height: 1;
+}
+
+.vote-confirmation-hero h1 {
+    max-width: 760px;
+    margin: 0;
+    color: #171717;
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    font-weight: 700;
+    line-height: .98;
+    letter-spacing: -.05em;
+}
+
+.vote-confirmation-election {
+    max-width: 760px;
+    margin: 1.3rem 0 0;
+    color: #171717;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.vote-confirmation-lead {
+    max-width: 650px;
+    margin: .8rem 0 0;
+    color: #666;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.vote-tracker-panel {
+    max-width: 760px;
+    margin: 3rem 0 0;
+    padding: 2rem;
+    background: #f7f6f2;
+    border-left: 3px solid #b35335;
+}
+
+.vote-tracker-panel h2 {
+    margin: .35rem 0 1.2rem;
+    color: #171717;
+    font-size: 1.65rem;
+    line-height: 1.1;
+    letter-spacing: -.025em;
+}
+
+.vote-tracker-code {
+    padding: 1rem 0;
+    color: #171717;
+    font-family: monospace;
+    font-size: 1.12rem;
+    font-weight: 700;
+    line-height: 1.45;
+    word-break: break-all;
+    border-top: 1px solid #d9d9d5;
+    border-bottom: 1px solid #d9d9d5;
+}
+
+.vote-tracker-explanation {
+    max-width: 680px;
+    margin: 1rem 0 0;
+    color: #666;
+    font-size: .92rem;
+    line-height: 1.55;
+}
+
+.vote-tracker-explanation a {
+    color: #171717;
+    font-weight: 600;
+}
+
+.vote-confirmation-security {
+    max-width: 760px;
+    margin-top: 1.5rem;
+    color: #666;
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.vote-confirmation-page .vote-share-panel {
+    margin: 3.5rem 0 2.5rem;
+    text-align: left;
+}
+
+.vote-confirmation-page .vote-share-panel h2 {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.vote-confirmation-page .vote-share-explanation {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.vote-confirmation-page .vote-share-actions {
+    justify-content: flex-start;
+}
+
+.vote-confirmation-footer {
+    max-width: 760px;
+    padding-top: .5rem;
+}
+
+.vote-confirmation-footer a {
+    color: #171717;
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.vote-confirmation-footer a:hover,
+.vote-confirmation-footer a:focus {
+    opacity: .55;
+}
+
+@media only screen and (max-width: 40em) {
+    .vote-confirmation-page {
+        padding-top: 2rem;
+    }
+
+    .vote-confirmation-hero {
+        padding-bottom: 2rem;
+    }
+
+    .vote-confirmation-hero h1 {
+        font-size: 2.7rem;
+    }
+
+    .vote-confirmation-election {
+        font-size: 1.1rem;
+    }
+
+    .vote-tracker-panel {
+        margin-top: 2rem;
+        padding: 1.4rem;
+    }
+}
