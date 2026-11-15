@@ -1,3 +1,17 @@
+# Rotacion de logs JSON de Docker (unica configuracion para todo el stack)
+x-logging-default: &logging_default
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+# Retener mas historial en el frontal web durante la votacion
+x-logging-web: &logging_web
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "10"
+
 services:
   # ============================================================
   # PostgreSQL
@@ -6,6 +20,7 @@ services:
   db:
     image: postgres:16-bookworm
     restart: unless-stopped
+    logging: *logging_default
 
     environment:
       POSTGRES_DB: helios
@@ -36,6 +51,7 @@ services:
   rabbitmq:
     image: rabbitmq:4.1-alpine
     restart: unless-stopped
+    logging: *logging_default
 
     environment:
       RABBITMQ_DEFAULT_USER: helios
@@ -67,6 +83,7 @@ services:
   migrate:
     image: ghcr.io/stegsindicato/helios-server:main
     restart: "no"
+    logging: *logging_default
 
     depends_on:
       db:
@@ -179,6 +196,7 @@ services:
   web:
     image: ghcr.io/stegsindicato/helios-server:main
     restart: unless-stopped
+    logging: *logging_web
     cpu_shares: 4096
 
     depends_on:
@@ -232,6 +250,7 @@ services:
   worker:
     image: ghcr.io/stegsindicato/helios-server:main
     restart: unless-stopped
+    logging: *logging_default
     cpu_shares: 2048
 
     depends_on:
@@ -260,6 +279,78 @@ services:
 
     volumes:
       - /srv/helios/media:/appmedia
+
+    networks:
+      - helios-internal
+
+  # ============================================================
+  # Copias de PostgreSQL (cada 15 minutos, conservar 7 dias)
+  # ============================================================
+
+  backup:
+    image: postgres:16-bookworm
+    restart: unless-stopped
+    user: "0:0"
+    cpu_shares: 128
+    cpus: 0.5
+    logging: *logging_default
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: helios
+      PGUSER: helios
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGCONNECT_TIMEOUT: "10"
+
+    volumes:
+      - /srv/helios/backups:/backups
+
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -Eeuo pipefail
+        umask 077
+        tmp=""
+        trap 'if [ -n "$$tmp" ]; then rm -f "$$tmp"; fi' EXIT
+
+        while true; do
+          ts=$$(date -u +%Y%m%dT%H%M%SZ)
+          file="/backups/helios_$${ts}.dump"
+          tmp="$${file}.partial"
+          echo "[$$(date -Is)] Iniciando backup: $$file"
+
+          if pg_dump -Fc -Z 1 -f "$$tmp" && pg_restore --list "$$tmp" >/dev/null; then
+            mv "$$tmp" "$$file"
+            tmp=""
+            sha256sum "$$file" > "$${file}.sha256"
+            find /backups -maxdepth 1 -type f \
+              \( -name 'helios_*.dump' -o -name 'helios_*.dump.sha256' \) \
+              -mmin +10080 -delete
+            echo "[$$(date -Is)] Backup correcto: $$file"
+          else
+            rm -f "$$tmp"
+            tmp=""
+            echo "[$$(date -Is)] ERROR: fallo el backup" >&2
+          fi
+
+          now=$$(date +%s)
+          delay=$$((900 - now % 900))
+          sleep "$$delay"
+        done
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "find /backups -maxdepth 1 -type f -name 'helios_*.dump.sha256' -mmin -45 -print -quit | grep -q ."
+      interval: 15m
+      timeout: 10s
+      retries: 2
+      start_period: 20m
 
     networks:
       - helios-internal
